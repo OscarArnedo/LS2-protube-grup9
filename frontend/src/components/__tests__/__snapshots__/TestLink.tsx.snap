@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`this component renders correctly 1`] = `
+<DocumentFragment>
+  <a
+    class="normal"
+    href="http://www.facebook.com"
+  >
+    Facebook2
+  </a>
+</DocumentFragment>
+`;
