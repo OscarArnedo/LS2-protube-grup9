@@ -43,7 +43,7 @@ class ProtubeBackApplicationTests {
 
 	@Test
 	void getVideos() throws Exception {
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/videos"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/videos"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn();
 
