@@ -3,7 +3,11 @@ package com.tecnocampus.LS2.protube_back.service;
 import com.tecnocampus.LS2.protube_back.domain.User;
 import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
+import com.tecnocampus.LS2.protube_back.service.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -18,4 +22,11 @@ public class UserService {
         return new UserDTO(userRepository.save(user));
     }
 
+    public UserDTO getUser(String id) {
+        return new UserDTO(userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id)));
+    }
+
+    public List<UserDTO> getUsers() {
+        return userRepository.findAll().stream().map(UserDTO::new).toList();
+    }
 }

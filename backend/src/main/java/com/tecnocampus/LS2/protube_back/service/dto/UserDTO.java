@@ -4,6 +4,8 @@ import com.tecnocampus.LS2.protube_back.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class UserDTO {
@@ -20,6 +22,7 @@ public class UserDTO {
         this.email = user.getEmail();
         this.password = user.getPassword();
     }
+
 
     @Override
     public String toString() {
