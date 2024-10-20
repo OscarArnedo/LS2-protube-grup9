@@ -94,4 +94,19 @@ class ProtubeBackApplicationTests {
 
 		assertEquals("46ad381a-3134-4e18-8039-85f2fee184f1", users.get(0).getId());
 	}
+	@Test
+	void updateUser() throws Exception {
+		String user = """
+				{
+				  "name": "Luis",
+				  "email" : "lacostas@edu.tecnocampus.cat",
+				  "password" : "123456"
+				}
+				""";
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/users/46ad381a-3134-4e18-8039-85f2fee184f1").contentType("application/json").content(user))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value("Luis"))
+				.andExpect(jsonPath("$.email").value("lacostas@edu.tecnocampus.cat"))
+				.andExpect(jsonPath("$.password").value("123456"));
+	}
 }
