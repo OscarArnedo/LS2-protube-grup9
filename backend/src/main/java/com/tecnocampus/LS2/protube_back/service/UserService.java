@@ -39,4 +39,9 @@ public class UserService {
 
         return new UserDTO(userRepository.save(user));
     }
+
+    public void deleteUser(String id) {
+        User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+        userRepository.delete(user);
+    }
 }

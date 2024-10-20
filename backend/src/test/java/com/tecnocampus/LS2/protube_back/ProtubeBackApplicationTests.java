@@ -3,8 +3,7 @@ package com.tecnocampus.LS2.protube_back;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProtubeBackApplicationTests {
 
 	@Autowired
@@ -33,6 +33,8 @@ class ProtubeBackApplicationTests {
 	private WebApplicationContext webApplicationContext;
 
 	private static ObjectMapper objectMapper;
+
+	private static String createdUserId;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -45,6 +47,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
+	@Order(1)
 	void getVideos() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/videos"))
 				.andExpect(status().isOk())
@@ -56,6 +59,7 @@ class ProtubeBackApplicationTests {
 		assertEquals("Bruno Mars - 24K Magic (Official Music Video)", videos.get(0));
 	}
 	@Test
+	@Order(2)
 	void createUser() throws Exception {
 		String user =  """
                 {
@@ -64,16 +68,23 @@ class ProtubeBackApplicationTests {
                   "password" : "123456"
                 }
                 """;
-		mockMvc.perform(post("/api/users/create").contentType("application/json").content(user))
+		MvcResult result = mockMvc.perform(post("/api/users/create").contentType("application/json").content(user))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value("Luis"))
 				.andExpect(jsonPath("$.email").value("lacostas@edu.tecnocampus.cat"))
-				.andExpect(jsonPath("$.password").value("123456"));
+				.andExpect(jsonPath("$.password").value("123456"))
+				.andReturn();
+
+		String content = result.getResponse().getContentAsString();
+		UserDTO userDTO = objectMapper.readValue(content, UserDTO.class);
+		createdUserId = userDTO.getId();
+		System.out.println("Created user id: " + createdUserId);
 
 	}
 	@Test
+	@Order(3)
 	void getUserById() throws Exception {
-		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/46ad381a-3134-4e18-8039-85f2fee184f1"))
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
 				.andExpect(status().isOk())
 				.andReturn();
 		String content = result.getResponse().getContentAsString();
@@ -84,6 +95,7 @@ class ProtubeBackApplicationTests {
 		assertEquals("123456", userDTO.getPassword());
 	}
 	@Test
+	@Order(4)
 	void getUsers() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
 				.andExpect(status().isOk())
@@ -95,18 +107,25 @@ class ProtubeBackApplicationTests {
 		assertEquals("46ad381a-3134-4e18-8039-85f2fee184f1", users.get(0).getId());
 	}
 	@Test
+	@Order(5)
 	void updateUser() throws Exception {
 		String user = """
 				{
 				  "name": "Luis",
 				  "email" : "lacostas@edu.tecnocampus.cat",
-				  "password" : "123456"
+				  "password" : "654321"
 				}
 				""";
-		mockMvc.perform(MockMvcRequestBuilders.put("/api/users/46ad381a-3134-4e18-8039-85f2fee184f1").contentType("application/json").content(user))
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/users/"+createdUserId).contentType("application/json").content(user))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value("Luis"))
 				.andExpect(jsonPath("$.email").value("lacostas@edu.tecnocampus.cat"))
-				.andExpect(jsonPath("$.password").value("123456"));
+				.andExpect(jsonPath("$.password").value("654321"));
+	}
+	@Test
+	@Order(6)
+	void deleteUser() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
+				.andExpect(status().isOk());
 	}
 }
