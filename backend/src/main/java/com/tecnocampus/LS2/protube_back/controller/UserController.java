@@ -2,12 +2,15 @@ package com.tecnocampus.LS2.protube_back.controller;
 
 import com.tecnocampus.LS2.protube_back.service.UserService;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User", description = "User API")
 public class UserController {
     private final UserService userService;
 
@@ -15,26 +18,31 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Create a user given a userDTO")
     @PostMapping("/create")
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
         return userService.createUser(userDTO);
     }
 
+    @Operation(summary = "Get a user given an id")
     @GetMapping("/{id}")
     public UserDTO getUser(@PathVariable String id) {
         return userService.getUser(id);
     }
 
+    @Operation(summary = "Get all users")
     @GetMapping()
     public List<UserDTO> getUsers() {
         return userService.getUsers();
     }
 
+    @Operation(summary = "Update a user given an id and a userDTO")
     @PutMapping("/{id}")
     public UserDTO updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
         return userService.updateUser(id, userDTO);
     }
 
+    @Operation(summary = "Delete a user given an id")
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable String id) {
         userService.deleteUser(id);
