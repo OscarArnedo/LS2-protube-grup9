@@ -19,3 +19,7 @@ content-type: application/json
     client.global.set("auth_token", response.headers.valueOf("Authorization"));
     client.log("token: " + response.headers.valueOf("Authorization"));
 %}
+
+###
+GET http://localhost:8080/api/videos
+Authorization: {{auth_token}}
