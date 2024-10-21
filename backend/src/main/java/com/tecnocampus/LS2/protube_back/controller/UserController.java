@@ -21,7 +21,6 @@ public class UserController {
     @Operation(summary = "Create a user given a userDTO")
     @PostMapping("/create")
     public UserDTO createUser(@RequestBody UserDTO userDTO) {
-        System.out.println("Creating user: " + userDTO);
         return userService.createUser(userDTO);
     }
 

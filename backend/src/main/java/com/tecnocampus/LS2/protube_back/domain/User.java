@@ -4,6 +4,7 @@ import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,11 +19,14 @@ public class User {
     private String id = UUID.randomUUID().toString();
 
     private String name;
+
+    @Email
     private String email;
     private String password;
 
     public User() {
     }
+
     public User(UserDTO userDTO) {
         this.name = userDTO.getName();
         this.email = userDTO.getEmail();
