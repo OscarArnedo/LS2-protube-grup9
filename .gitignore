@@ -1,2 +1,4 @@
 .vscode/
 .idea/
+tooling/scriptCarregarVideosBD.py
+tooling/videoGrabber/vars.py
