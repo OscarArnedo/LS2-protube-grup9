@@ -33,13 +33,37 @@ const Form =({onSubmit}: FormProps) =>{
     }
 
     return(
-        <div>   
+        <div className="form-container">
             <form onSubmit={handleSubmit}>
-                <input onChange={handleChange} value={inputValues.name} type="text" name='name' placeholder='Name'/>
-                <input onChange={handleChange} value={inputValues.email} type="text" name='email' placeholder='Email'/>
-                <input onChange={handleChange} value={inputValues.password} type="password" name='password' placeholder='Password'/>
-                <button onClick={handleClear} type='button'>Clear the form</button>
-                <button type='submit'>Submit</button>
+                <input
+                    className="input-field"
+                    onChange={handleChange}
+                    value={inputValues.name}
+                    type="text"
+                    name="name"
+                    placeholder="Name"/>
+                <input
+                    className="input-field"
+                    onChange={handleChange}
+                    value={inputValues.email}
+                    type="text"
+                    name="email"
+                    placeholder="Email"/>
+                <input
+                    className="input-field"
+                    onChange={handleChange}
+                    value={inputValues.password}
+                    type="password"
+                    name="password"
+                    placeholder="Password"/>
+                <div className="button-group">
+                    <button className="button" onClick={handleClear} type="button">
+                        Clear the form
+                    </button>
+                    <button className="button" type="submit">
+                        Submit
+                    </button>
+                </div>
             </form>
         </div>
     )

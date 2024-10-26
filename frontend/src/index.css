@@ -37,3 +37,20 @@ form input{
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.input-field {
+    padding: 8px;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px; 
+}
+
+.button {
+    padding: 8px 16px;
+    font-size: 16px;
+    cursor: pointer;
+}
