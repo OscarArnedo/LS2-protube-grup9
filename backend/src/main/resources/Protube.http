@@ -1,0 +1,25 @@
+POST http://localhost:8080/api/users/create
+content-type: application/json
+
+{
+  "name": "oarnedo",
+  "password": "password123",
+  "email": "oarnedo@edu.tecnocampus.cat"
+}
+
+###
+POST http://localhost:8080/authenticate
+content-type: application/json
+
+{
+  "username": "oarnedo",
+  "password": "password123"
+}
+> {%
+    client.global.set("auth_token", response.headers.valueOf("Authorization"));
+    client.log("token: " + response.headers.valueOf("Authorization"));
+%}
+
+###
+GET http://localhost:8080/api/videos
+Authorization: {{auth_token}}
