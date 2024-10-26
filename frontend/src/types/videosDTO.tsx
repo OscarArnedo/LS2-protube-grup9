@@ -1,5 +1,5 @@
-export interface VideosDTO {
+/*export interface VideosDTO {
     id: number;
     username: string;
     password: string;
-}
+}*/
