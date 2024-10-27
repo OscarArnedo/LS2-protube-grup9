@@ -1,4 +1,4 @@
-import { UserDTO as User } from '../types/userDTO';
+import { RegisterDTO as User } from '../types/userInterfaces';
 import useNewUserForm from '../hooks/useNewUserForm';
 
 

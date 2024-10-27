@@ -1,5 +1,5 @@
 import { useReducer } from "react"
-import { UserDTO as User } from "../types/userDTO"
+import { RegisterDTO as User } from "../types/userInterfaces"
 
 interface FormState {
     inputValues: User
