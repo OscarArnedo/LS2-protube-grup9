@@ -6,28 +6,34 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VideoDTO {
+public class VideoMetaDataDTO {
     private Long id;
+    private Long width;
+    private Long height;
+    private Long duration;
     private String title;
-    private String username;
-    private String urlImage;
     private UserDTO owner;
 
-    public VideoDTO() {
+    public VideoMetaDataDTO() {
     }
-    public VideoDTO(Video video) {
+    public VideoMetaDataDTO(Video video) {
         this.id = video.getId();
+        this.width = video.getWidth();
+        this.height = video.getHeight();
+        this.duration = video.getDuration();
         this.title = video.getTitle();
-        this.username = video.getUsername();
+        this.owner = new UserDTO(video.getOwner());
+
     }
 
     @Override
     public String toString() {
         return "VideoDTO{" +
                 "id=" + id +
+                ", width=" + width +
+                ", height=" + height +
+                ", duration=" + duration +
                 ", title='" + title + '\'' +
-                ", username='" + username + '\'' +
-                ", urlImage='" + urlImage + '\'' +
                 ", owner=" + owner +
                 '}';
     }

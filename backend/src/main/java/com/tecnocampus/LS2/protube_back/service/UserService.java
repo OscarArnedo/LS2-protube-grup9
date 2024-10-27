@@ -39,7 +39,6 @@ public class UserService {
 
     public UserDTO updateUser(String id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
-        //TODO Validate if the userDTO is valid
 
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
@@ -50,6 +49,7 @@ public class UserService {
 
     public void deleteUser(String id) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+        // TODO: Delete userSecurity
         userRepository.delete(user);
     }
 }

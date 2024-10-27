@@ -19,14 +19,11 @@ public class Video {
     private String title;
     private String username;
 
+    @ManyToOne
+    @JoinColumn(name = "username_id")
+    private User owner;
+
+
     public Video() {
-    }
-    public Video(VideoDTO videoDTO) {
-        this.id = videoDTO.getId();
-        this.width = videoDTO.getWidth();
-        this.height = videoDTO.getHeight();
-        this.duration = videoDTO.getDuration();
-        this.title = videoDTO.getTitle();
-        this.username = videoDTO.getUsername();
     }
 }
