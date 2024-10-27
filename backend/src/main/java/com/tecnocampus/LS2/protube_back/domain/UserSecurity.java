@@ -25,16 +25,16 @@ public class UserSecurity {
     private Long id;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 20)
     private String username;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 50)
     @Email
     private String email;
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 120)
     private String password;
 
     @Enumerated(EnumType.STRING)
