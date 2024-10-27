@@ -32,6 +32,11 @@ public class VideoController {
         return videoService.getVideos();
     }
 
+    @GetMapping("/{id}")
+    public VideoMetaDataDTO getVideo(@PathVariable Long id) {
+        return videoService.getVideoMeta(id);
+    }
+
     @Operation(summary = "Update a video given an id and a videoDTO")
     @PutMapping("/{id}")
     public VideoDTO updateVideo(@PathVariable Long id, Principal principal, @RequestBody VideoMetaDataDTO videoMetaDataDTO) {

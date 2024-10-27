@@ -2,9 +2,9 @@ POST http://localhost:8080/api/users/create
 content-type: application/json
 
 {
-  "name": "oarnedo",
+  "name": "Luis",
   "password": "password123",
-  "email": "oarnedo@edu.tecnocampus.cat"
+  "email": "lacostas@edu.tecnocampus.cat"
 }
 
 ###
@@ -23,6 +23,11 @@ content-type: application/json
 ###
 GET http://localhost:8080/api/videos
 Authorization: {{auth_token}}
+
+###
+GET http://localhost:8080/api/videos/0
+Authorization: {{auth_token}}
+
 
 ###
 PUT http://localhost:8080/api/videos/0

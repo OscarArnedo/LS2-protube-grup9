@@ -38,4 +38,8 @@ public class VideoService {
 
         return new VideoDTO(videoRepository.save(video));
     }
+
+    public VideoMetaDataDTO getVideoMeta(Long id) {
+        return new VideoMetaDataDTO(videoRepository.findById(id).orElseThrow(()->new VideoNotFoundException(id)));
+    }
 }
