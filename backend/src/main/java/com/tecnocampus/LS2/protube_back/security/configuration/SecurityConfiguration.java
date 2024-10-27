@@ -19,6 +19,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableMethodSecurity
 public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {
+            "/",
+            "/api/videos",
             "/authenticate",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -26,6 +28,7 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",
+            "/assets/**",
             "/api/users/create"
         };
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -52,6 +55,8 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
                                 .requestMatchers(POST,"/user/create").permitAll()
+                                .requestMatchers(PUT,"/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()
                                 .authenticated()
