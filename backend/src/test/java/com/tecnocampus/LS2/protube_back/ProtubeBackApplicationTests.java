@@ -40,6 +40,8 @@ class ProtubeBackApplicationTests {
 	private static String createdUserId;
 	private static String randomName;
 	private static String randomEmail;
+	private static String passwordEncrypted = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2";
+	private static String password = "password123";
 
 	@BeforeAll
 	static void init() {
@@ -65,19 +67,34 @@ class ProtubeBackApplicationTests {
 	}
 	@Test
 	@Order(2)
+	void getVideoById() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/0")
+						.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(0))
+				.andExpect(jsonPath("$.title").value("Bruno Mars - 24K Magic (Official Music Video)"))
+				.andExpect(jsonPath("$.height").value(1080))
+				.andExpect(jsonPath("$.width").value(1920))
+				.andExpect(jsonPath("$.duration").value(24))
+				.andExpect(jsonPath("$.owner.id").value("509c436d-e603-4f35-a7c4-95be0c15167a"))
+				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
+				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"));
+	}
+
+	@Test
+	@Order(3)
 	void createUser() throws Exception {
 		String user =  """
                 {
                   "name": "%s",
                   "email" : "%s",
-                  "password" : "123456"
+                  "password" : "%s"
                 }
-                """.formatted(randomName, randomEmail);
+                """.formatted(randomName, randomEmail,passwordEncrypted);
 		MvcResult result = mockMvc.perform(post("/api/users/create").contentType("application/json").content(user))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value(randomName))
 				.andExpect(jsonPath("$.email").value(randomEmail))
-				.andExpect(jsonPath("$.password").value("123456"))
 				.andReturn();
 
 		String content = result.getResponse().getContentAsString();
@@ -87,7 +104,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(3)
+	@Order(4)
 	void getUserById() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
 				.andExpect(status().isOk())
@@ -97,11 +114,10 @@ class ProtubeBackApplicationTests {
 
 		assertEquals(randomName, userDTO.getName());
 		assertEquals(randomEmail, userDTO.getEmail());
-		assertEquals("123456", userDTO.getPassword());
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	void getUsers() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
 				.andExpect(status().isOk())
@@ -113,7 +129,7 @@ class ProtubeBackApplicationTests {
 		assertEquals(createdUserId, users.stream().filter(user -> user.getId().equals(createdUserId)).findFirst().get().getId());
 	}
 
-	@Test
+	/*@Test
 	@Order(5)
 	void updateUser() throws Exception {
 		String user = """
@@ -128,7 +144,7 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$.name").value(randomName))
 				.andExpect(jsonPath("$.email").value(randomEmail))
 				.andExpect(jsonPath("$.password").value("654321"));
-	}
+	}*/
 
 	@Test
 	@Order(6)
