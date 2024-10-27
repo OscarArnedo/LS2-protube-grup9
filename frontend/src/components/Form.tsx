@@ -46,7 +46,7 @@ const Form =({onSubmit}: FormProps) =>{
                     className="input-field"
                     onChange={handleChange}
                     value={inputValues.email}
-                    type="text"
+                    type="email"
                     name="email"
                     placeholder="Email"/>
                 <input
