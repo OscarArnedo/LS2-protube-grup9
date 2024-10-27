@@ -20,9 +20,20 @@ def insert_user(conn, author, created_users):
         if user['name'] == author:
             return user['id']
 
+
+    email = f"{author}@gmail.com"
+    with conn.cursor() as cur:
+        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+        existing_user = cur.fetchone()
+
+        if existing_user:
+            # Si el usuario ya existe, devuelve su ID
+            user_id = existing_user[0]
+            created_users.append({'id': user_id, 'name': author})
+            return user_id
+
     # If user does not exist, create a new one
     user_id = str(uuid.uuid4())
-    email = f"{author}@gmail.com"
     password = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2"
 
     with conn.cursor() as cur:
@@ -49,7 +60,8 @@ def insert_video(conn, video_data):
             INSERT INTO videos (id, width, height, duration, title, owner_id)
             VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id;
-        """, (video_data['id'], video_data['width'], video_data['height'], video_data['duration'], video_data['title'], user_id))
+        """, (video_data['id'], video_data['width'], video_data['height'],
+              video_data['duration'], video_data['title'], user_id))
         video_id = cur.fetchone()[0]
 
         # Inserta la metadata

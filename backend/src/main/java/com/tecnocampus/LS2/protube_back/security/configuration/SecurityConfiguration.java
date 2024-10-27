@@ -55,6 +55,8 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
                                 .requestMatchers(POST,"/user/create").permitAll()
+                                .requestMatchers(PUT,"/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()
                                 .authenticated()
