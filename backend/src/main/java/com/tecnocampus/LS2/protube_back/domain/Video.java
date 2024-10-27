@@ -17,7 +17,6 @@ public class Video {
     private Long height;
     private Long duration;
     private String title;
-    private String username;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
