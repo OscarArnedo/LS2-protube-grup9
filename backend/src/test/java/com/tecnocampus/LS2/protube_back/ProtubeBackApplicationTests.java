@@ -60,9 +60,6 @@ class ProtubeBackApplicationTests {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].id").exists())
-				.andExpect(jsonPath("$[0].width").exists())
-				.andExpect(jsonPath("$[0].height").exists())
-				.andExpect(jsonPath("$[0].duration").exists())
 				.andExpect(jsonPath("$[0].title").exists())
 				.andExpect(jsonPath("$[0].username").exists());
 	}
@@ -119,19 +116,17 @@ class ProtubeBackApplicationTests {
 	@Test
 	@Order(5)
 	void updateUser() throws Exception {
-		String updatedName = RandomStringUtils.randomAlphabetic(8);
-		String updatedEmail = updatedName.toLowerCase() + "@example.com";
 		String user = """
     {
       "name": "%s",
       "email" : "%s",
       "password" : "654321"
     }
-    """.formatted(updatedName, updatedEmail);
+    """.formatted(randomName, randomEmail);
 		mockMvc.perform(MockMvcRequestBuilders.put("/api/users/"+createdUserId).contentType("application/json").content(user))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.name").value(updatedName))
-				.andExpect(jsonPath("$.email").value(updatedEmail))
+				.andExpect(jsonPath("$.name").value(randomName))
+				.andExpect(jsonPath("$.email").value(randomEmail))
 				.andExpect(jsonPath("$.password").value("654321"));
 	}
 

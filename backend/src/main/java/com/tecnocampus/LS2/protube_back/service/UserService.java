@@ -42,14 +42,14 @@ public class UserService {
 
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
 
         return new UserDTO(userRepository.save(user));
     }
 
     public void deleteUser(String id) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
-        // TODO: Delete userSecurity
+        userSecurityRepository.delete(userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
+                new UserNotFoundException(user.getEmail())));
         userRepository.delete(user);
     }
 }

@@ -20,7 +20,7 @@ public class Video {
     private String username;
 
     @ManyToOne
-    @JoinColumn(name = "username_id")
+    @JoinColumn(name = "owner_id")
     private User owner;
 
 
