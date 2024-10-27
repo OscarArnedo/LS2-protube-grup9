@@ -42,7 +42,7 @@ function App() {
 
   return(
     <div className="App" ref={divRef}>
-       <h1>Login</h1>
+       <h1 className="text-2xl font-bold mb-4">Login</h1>
       {!isAuthenticated ? (
         <Login onLogin={handleLogin} />
       ) : (

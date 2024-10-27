@@ -18,44 +18,34 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         }
     };
 
-    const handleClear = () => {
-        setUsername('');
-        setPassword('');
-        setError('');
-    };
-
     return (
-        <div>
-            <h2>Login</h2>
+        <div className="login-container">
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password:</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div className="button-group">
-                    <button type="button" onClick={handleClear}>
-                        Clear the form
-                    </button>
-                    <button type="submit">Submit</button>
-                </div>
+                <input
+                    type="text"
+                    id="username"
+                    placeholder="Username"
+                    className='border border-gray-300 p-2 mb-4 rounded w-full'
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                />
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    className="border border-gray-300 p-2 mb-4 rounded w-full"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
+                <button 
+                    type="submit" 
+                    className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300"
+                    > Sign in
+                </button>
             </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Muestra el mensaje de error */}
+            {error && <p className="text-red-500 mt-4">{error}</p>} {/* Muestra el mensaje de error */}
         </div>
     );
 };
