@@ -1,5 +1,6 @@
 package com.tecnocampus.LS2.protube_back.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tecnocampus.LS2.protube_back.domain.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private String id;
     private String name;
@@ -20,7 +22,6 @@ public class UserDTO {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.password = user.getPassword();
     }
 
 

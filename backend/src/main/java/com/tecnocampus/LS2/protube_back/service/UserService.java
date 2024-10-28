@@ -39,17 +39,17 @@ public class UserService {
 
     public UserDTO updateUser(String id, UserDTO userDTO) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
-        //TODO Validate if the userDTO is valid
 
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
 
         return new UserDTO(userRepository.save(user));
     }
 
     public void deleteUser(String id) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+        userSecurityRepository.delete(userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
+                new UserNotFoundException(user.getEmail())));
         userRepository.delete(user);
     }
 }
