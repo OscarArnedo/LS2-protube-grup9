@@ -1,16 +1,19 @@
 import './App.css';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {login,register} from './services/users';
 import './index.css';
 import Login from './components/Login';
 import Register from './components/Register';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import VideoCard from './components/VideoCard';
+import { fetchVideos } from './services/videos';
+        
 function App() {
   const divRef = useRef<HTMLDivElement>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showRegister, setShowRegister] = useState(false); // Estado para alternar entre Login y Register
+  const [showRegister, setShowRegister] = useState(false);
+  const [videos, setVideos] = useState([]);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -32,6 +35,19 @@ function App() {
       toast.error('Registration failed. Please try again.');
     }
   };
+    
+  useEffect(() => {
+    const getVideos = async () => {
+      try {
+        const videosData = await fetchVideos();
+        setVideos(videosData);
+      } catch (error) {
+        console.error('Error fetching videos');
+      }
+    };
+
+    getVideos();
+  }, []);
 
   return(
     <div className="App" ref={divRef}>
@@ -67,9 +83,33 @@ function App() {
           </button>
         </>
       ) : (
-        <h2>Welcome</h2>
+        <header className="App-header">
+          <h1>Videos</h1>
+        </header>
+        {/* { <div className="video-list">
+        {videos.map((video) => (
+          <VideoCard
+            key={video.id}
+            title={video.title}
+            author={video.author}
+            imageUrl={video.imageUrl}
+          />
+        ))}
+        </div>} */}
+        <div className="video-list">
+                {videos.length > 0 ? (
+                    videos.map((videoTitle, index) => (
+                        <VideoCard 
+                            key={index}
+                            title={videoTitle}
+                        />
+                    ))
+                ) : (
+                    <p>No videos available</p>
+                )}
+            </div>
+        </div>
       )}
-    </div>
   );  
 }
 
