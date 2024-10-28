@@ -22,11 +22,10 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/api/videos
-Authorization: {{auth_token}}
+
 
 ###
 GET http://localhost:8080/api/videos/0
-Authorization: {{auth_token}}
 
 
 ###
