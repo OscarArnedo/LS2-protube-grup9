@@ -1,33 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import VideoCard from './components/VideoCard';
-import logo from './assets/logo.svg';
 import './App.css';
-
-// This is your entry point
-// Feel free to modify ANYTHING in this file
+import { fetchVideos } from './services/videos';
 
 function App() {
   const [videos, setVideos] = useState([]);
-
+  
   useEffect(() => {
-    const fetchVideos = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/api/videos');
-            console.log('Videos fetched:', response.data);
-            setVideos(response.data);
-        } catch (error) {
-            console.error('Error fetching videos', error);
-        }
+    const getVideos = async () => {
+      try {
+        const videosData = await fetchVideos();
+        setVideos(videosData);
+      } catch (error) {
+        console.error('Error fetching videos');
+      }
     };
 
-    fetchVideos();
+    getVideos();
   }, []);
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <h1>Videos</h1>
       </header>
       {/* { <div className="video-list">
