@@ -1,19 +1,20 @@
 import './App.css';
 import { useState, useRef, useEffect } from 'react';
-import {login,register} from './services/users';
+import {login,register} from './services/userService';
 import './index.css';
 import Login from './components/Login';
 import Register from './components/Register';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './components/VideoCard';
-import { fetchVideos } from './services/videos';
+import { fetchVideos } from './services/videoService';
+import { VideosDTO } from './types/videoInterfaces';
         
 function App() {
   const divRef = useRef<HTMLDivElement>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState<VideosDTO[]>([]);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -25,6 +26,7 @@ function App() {
         console.error('Login failed:', error);
     }
   };
+
   const handleRegister = async (name: string, email: string, password: string) => {
     try {
       const response = await register(name, email, password);
@@ -39,7 +41,8 @@ function App() {
   useEffect(() => {
     const getVideos = async () => {
       try {
-        const videosData = await fetchVideos();
+        const videosData: VideosDTO[] = await fetchVideos();
+        console.log('Videos fetched:', videosData);
         setVideos(videosData);
       } catch (error) {
         console.error('Error fetching videos');
@@ -52,21 +55,21 @@ function App() {
   return(
     <div className="App" ref={divRef}>
       <ToastContainer
-              position="top-center" 
-              autoClose={5000}
-              hideProgressBar={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              style={{
-                  position: 'fixed',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 9999,
-                  pointerEvents: 'none', 
-              }} 
-        />
+        position="top-center" 
+        autoClose={5000}
+        hideProgressBar={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 9999,
+          pointerEvents: 'none', 
+        }} 
+      />
       <h1 className="text-2xl font-bold mb-4">{showRegister ? 'Register' : 'Login'}</h1>
       {!isAuthenticated ? (
         <>
@@ -83,35 +86,24 @@ function App() {
           </button>
         </>
       ) : (
-        <header className="App-header">
-          <h1>Videos</h1>
-        </header>
-        {/* { <div className="video-list">
-        {videos.map((video) => (
-          <VideoCard
-            key={video.id}
-            title={video.title}
-            author={video.author}
-            imageUrl={video.imageUrl}
-          />
-        ))}
-        </div>} */}
-        <div className="video-list">
-                {videos.length > 0 ? (
-                    videos.map((videoTitle, index) => (
-                        <VideoCard 
-                            key={index}
-                            title={videoTitle}
-                        />
-                    ))
-                ) : (
-                    <p>No videos available</p>
-                )}
-            </div>
+        <div>
+          <header className="App-header">
+            <h1 className="text-3xl font-bold my-4">Videos</h1>
+          </header>
+          <div className="flex flex-wrap justify-center">
+            {videos.map((video) => (
+              <VideoCard
+                id={video.id}
+                title={video.title}
+                owner={video.owner}
+                image={video.image}
+              />
+            ))}
         </div>
-      )}
-  );  
+    </div>
+  )}
+  </div>
+  ); 
 }
-
 
 export default App;

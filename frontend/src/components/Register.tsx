@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
-import { register } from '../services/users';
+import { register } from '../services/userService';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface RegisterProps {
