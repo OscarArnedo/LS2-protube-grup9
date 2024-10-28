@@ -51,17 +51,17 @@ def insert_user(conn, author, created_users):
     created_users.append({'id': user_id, 'name': author})
     return user_id
 
-def insert_video(conn, video_data):
+def insert_video(conn, video_data, directory_path):
     created_users = []
     user_id = insert_user(conn, video_data['user'], created_users)
     with conn.cursor() as cur:
         # Inserta los datos del video
         cur.execute("""
-            INSERT INTO videos (id, width, height, duration, title, owner_id)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO videos (id, width, height, duration, title, owner_id, image_path, video_path)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id;
-        """, (video_data['id'], video_data['width'], video_data['height'],
-              video_data['duration'], video_data['title'], user_id))
+        """, (video_data['id'], video_data['width'], video_data['height'], video_data['duration'], video_data['title'],
+              user_id, f"{directory_path}/{video_data['id']}.webp", f"{directory_path}/{video_data['id']}.mp4"))
         video_id = cur.fetchone()[0]
 
         # Inserta la metadata
@@ -106,7 +106,7 @@ def process_json_files(directory_path):
                 with open(file_path, 'r', encoding='utf-8') as json_file:
                     video_data = json.load(json_file)
 
-                    insert_video(conn, video_data)
+                    insert_video(conn, video_data, directory_path)
                 print(f"Procesado archivo: {filename}")
     except Exception as e:
         print(f"Ocurrió un error: {e}")
