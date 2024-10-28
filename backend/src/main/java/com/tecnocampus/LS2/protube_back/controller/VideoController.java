@@ -20,7 +20,7 @@ import java.util.List;
 @Tag(name = "Video", description = "Video API")
 public class VideoController {
     private static final Logger logger = LoggerFactory.getLogger(VideoController.class);
-    private VideoService videoService;
+    private final VideoService videoService;
 
     public VideoController(VideoService videoService) {
         this.videoService = videoService;

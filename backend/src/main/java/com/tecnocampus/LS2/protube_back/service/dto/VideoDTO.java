@@ -11,16 +11,15 @@ import lombok.Setter;
 public class VideoDTO {
     private Long id;
     private String title;
-    private String username;
-    private String urlImage;
-    private UserDTO owner;
+    private String owner;
+    private String image;
 
     public VideoDTO() {
     }
     public VideoDTO(Video video) {
         this.id = video.getId();
         this.title = video.getTitle();
-        this.username = video.getOwner().getName();
+        this.owner = video.getOwner().getName();
     }
 
     @Override
@@ -28,9 +27,8 @@ public class VideoDTO {
         return "VideoDTO{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", username='" + username + '\'' +
-                ", urlImage='" + urlImage + '\'' +
-                ", owner=" + owner +
+                ", owner='" + owner + '\'' +
+                ", image='" + image + '\'' +
                 '}';
     }
 }

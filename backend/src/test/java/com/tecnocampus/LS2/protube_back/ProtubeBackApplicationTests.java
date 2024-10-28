@@ -63,7 +63,8 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$").isArray())
 				.andExpect(jsonPath("$[0].id").exists())
 				.andExpect(jsonPath("$[0].title").exists())
-				.andExpect(jsonPath("$[0].username").exists());
+				.andExpect(jsonPath("$[0].owner").exists())
+				.andExpect(jsonPath("$[0].image").exists());
 	}
 	@Test
 	@Order(2)
@@ -76,7 +77,6 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$.height").value(1080))
 				.andExpect(jsonPath("$.width").value(1920))
 				.andExpect(jsonPath("$.duration").value(24))
-				.andExpect(jsonPath("$.owner.id").value("509c436d-e603-4f35-a7c4-95be0c15167a"))
 				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
 				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"));
 	}

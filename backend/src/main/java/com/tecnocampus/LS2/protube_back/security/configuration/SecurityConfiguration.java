@@ -23,6 +23,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
     private static final String[] WHITE_LIST_URL = {
             "/",
             "/api/videos",
+            "/api/videos/{id}",
             "/authenticate",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -67,7 +68,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
                                 .requestMatchers(POST,"/user/create").permitAll()
                                 .requestMatchers(PUT,"/videos/{id}").hasAnyRole("ADMIN", "USER")
-                                .requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                //.requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()
                                 .authenticated()
