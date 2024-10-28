@@ -12,7 +12,7 @@ public class VideoDTO {
     private Long id;
     private String title;
     private String username;
-    private String urlImage;
+    private String imagePath;
     private UserDTO owner;
 
     public VideoDTO() {
@@ -21,6 +21,7 @@ public class VideoDTO {
         this.id = video.getId();
         this.title = video.getTitle();
         this.username = video.getOwner().getName();
+        this.imagePath = video.getImagePath();
     }
 
     @Override
@@ -29,7 +30,7 @@ public class VideoDTO {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", username='" + username + '\'' +
-                ", urlImage='" + urlImage + '\'' +
+                ", imagePath='" + imagePath + '\'' +
                 ", owner=" + owner +
                 '}';
     }

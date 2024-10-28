@@ -17,6 +17,8 @@ public class Video {
     private Long height;
     private Long duration;
     private String title;
+    private String videoPath;
+    private String imagePath;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
