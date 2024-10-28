@@ -4,3 +4,7 @@ export interface VideosDTO {
     owner: string;
     image: string;
 }
+
+export interface HomeVideosDTO {
+    videos: VideosDTO[];
+}

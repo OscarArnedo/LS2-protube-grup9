@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { register } from '../services/userService';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,6 +15,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const navigate = useNavigate();
 
     const validatePassword = (password: string) => {
         const minLength = 6;
@@ -45,6 +47,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
     return (
         <div className="register-container">
+            <h1 className="text-3xl font-bold mb-6">Register</h1>
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
@@ -117,6 +120,11 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
                     </button>
                 </div>
             </form>
+            <button 
+                className="mt-4 text-blue-500 underline"
+                onClick={() => navigate('/login')}
+                > Already have an account? Login
+            </button>
         </div>
     );
 };

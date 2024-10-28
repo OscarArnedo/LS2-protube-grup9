@@ -1,20 +1,19 @@
 import './App.css';
-import { useState, useRef, useEffect } from 'react';
-import {login,register} from './services/userService';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {login, register} from './services/userService';
 import './index.css';
-import Login from './components/Login';
-import Register from './components/Register';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import VideoCard from './components/VideoCard';
 import { fetchVideos } from './services/videoService';
 import { VideosDTO } from './types/videoInterfaces';
+import AppRoutes from './routes/Routes';
         
 function App() {
-  const divRef = useRef<HTMLDivElement>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
   const [videos, setVideos] = useState<VideosDTO[]>([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -22,22 +21,30 @@ function App() {
         console.log('Login successful:', response);
         setIsAuthenticated(true);
         localStorage.setItem('token', response.token);
+        navigate('/');
     } catch (error) {
         console.error('Login failed:', error);
+        toast.error('Login failed. Please check your credentials');
     }
   };
 
   const handleRegister = async (name: string, email: string, password: string) => {
     try {
       const response = await register(name, email, password);
-      console.log('Registration successful:', response);
-      setShowRegister(false); 
+      console.log('Registration successful:', response); 
       toast.success('Registration successful! You can now log in.');
+      navigate('/login');
     } catch (error) {
       toast.error('Registration failed. Please try again.');
     }
   };
     
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   useEffect(() => {
     const getVideos = async () => {
       try {
@@ -48,12 +55,12 @@ function App() {
         console.error('Error fetching videos');
       }
     };
-
     getVideos();
   }, []);
 
+
   return(
-    <div className="App" ref={divRef}>
+    <div className="App">
       <ToastContainer
         position="top-center" 
         autoClose={5000}
@@ -70,40 +77,28 @@ function App() {
           pointerEvents: 'none', 
         }} 
       />
-      <h1 className="text-2xl font-bold mb-4">{showRegister ? 'Register' : 'Login'}</h1>
-      {!isAuthenticated ? (
-        <>
-          {showRegister ? (
-            <Register onRegister={handleRegister} />
+      <div className="flex justify-end p-4">
+        {location.pathname !== '/login' && location.pathname !== '/register' && ( 
+          isAuthenticated ? (
+            <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit" onClick={handleLogout}>
+              Logout
+            </button>
           ) : (
-            <Login onLogin={handleLogin} />
-          )}
-          <button
-            className="mt-4 text-blue-500 underline"
-            onClick={() => setShowRegister(!showRegister)}
-          >
-            {showRegister ? 'Already have an account? Login' : "Don't have an account? Register"}
-          </button>
-        </>
-      ) : (
-        <div>
-          <header className="App-header">
-            <h1 className="text-3xl font-bold my-4">Videos</h1>
-          </header>
-          <div className="flex flex-wrap justify-center">
-            {videos.map((video) => (
-              <VideoCard
-                id={video.id}
-                title={video.title}
-                owner={video.owner}
-                image={video.image}
-              />
-            ))}
-        </div>
+            <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit" onClick={() => navigate('/login')}>
+              Login
+            </button>
+          )
+        )}
+      </div>
+
+      <AppRoutes
+        handleLogin={handleLogin}
+        handleRegister={handleRegister}
+        isAuthenticated={isAuthenticated}
+        videos={videos}
+      />
     </div>
-  )}
-  </div>
-  ); 
+  );
 }
 
 export default App;
