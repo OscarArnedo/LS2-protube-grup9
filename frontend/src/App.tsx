@@ -1,33 +1,16 @@
 import './App.css';
-//import Form from './components/Form';
-import { /*useEffect,*/ useState, useRef } from 'react';
-//import type { RegisterDTO } from './types/userInterfaces';
-//import List from './components/List';
-import {/*getAllUsers, */login} from './services/users';
+import { useState, useRef } from 'react';
+import {login,register} from './services/users';
 import './index.css';
 import Login from './components/Login';
-
-//import { BrowserRouter, Routes,Route,Outlet,Link } from 'react-router-dom';
-
-// interface AppState {
-//   users: Array<RegisterDTO>
-//   newUserNumber: number
-// }
+import Register from './components/Register';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
-  //const [newUserNumber, setNewUserNumber] = useState<AppState["newUserNumber"]>(0)
   const divRef = useRef<HTMLDivElement>(null)
-  //const [users, setUsers] = useState<AppState["users"]>([])
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // useEffect(() => {
-  //   getAllUsers().then(setUsers)
-  // }, [])
-
-  // const handleSubmit = (newuser: RegisterDTO):void => {
-  //   setUsers(users =>[...users, newuser])
-  //   setNewUserNumber(n => n + 1)
-  // }
+  const [showRegister, setShowRegister] = useState(false); // Estado para alternar entre Login y Register
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -38,24 +21,55 @@ function App() {
     } catch (error) {
         console.error('Login failed:', error);
     }
-};
+  };
+  const handleRegister = async (name: string, email: string, password: string) => {
+    try {
+      const response = await register(name, email, password);
+      console.log('Registration successful:', response);
+      setShowRegister(false); 
+      toast.success('Registration successful! You can now log in.');
+    } catch (error) {
+      toast.error('Registration failed. Please try again.');
+    }
+  };
 
   return(
     <div className="App" ref={divRef}>
-       <h1 className="text-2xl font-bold mb-4">Login</h1>
+      <ToastContainer
+              position="top-center" 
+              autoClose={5000}
+              hideProgressBar={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              style={{
+                  position: 'fixed',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 9999,
+                  pointerEvents: 'none', 
+              }} 
+        />
+      <h1 className="text-2xl font-bold mb-4">{showRegister ? 'Register' : 'Login'}</h1>
       {!isAuthenticated ? (
-        <Login onLogin={handleLogin} />
+        <>
+          {showRegister ? (
+            <Register onRegister={handleRegister} />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+          <button
+            className="mt-4 text-blue-500 underline"
+            onClick={() => setShowRegister(!showRegister)}
+          >
+            {showRegister ? 'Already have an account? Login' : "Don't have an account? Register"}
+          </button>
+        </>
       ) : (
         <h2>Welcome</h2>
       )}
     </div>
-    // <div className="App" ref={divRef}>
-    //   <h1>Login</h1>
-    //   <List users={users} />
-    //   New users: {newUserNumber}
-    //   <Form onSubmit={handleSubmit} />
-    // </div>
-
   );  
 }
 

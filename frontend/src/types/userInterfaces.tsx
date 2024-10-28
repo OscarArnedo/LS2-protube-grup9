@@ -1,9 +1,17 @@
 export interface LoginResponse {
     token: string;
 }
+export interface RegisterResponse {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+}
 
 export interface RegisterDTO {
     name: string;
+    lastname: string;
+    username: string;
     email: string;
     password: string;
 }
