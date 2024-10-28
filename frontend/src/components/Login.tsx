@@ -39,11 +39,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button 
-                    type="submit" 
-                    className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300"
-                    > Sign in
-                </button>
+                <div className="flex justify-center">
+                    <button 
+                        type="submit" 
+                        className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit"
+                        > Login
+                    </button>
+                </div>
             </form>
             {error && <p className="text-red-500 mt-4">{error}</p>} {/* Muestra el mensaje de error */}
         </div>
