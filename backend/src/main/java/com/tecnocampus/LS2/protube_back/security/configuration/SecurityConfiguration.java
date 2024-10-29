@@ -32,7 +32,8 @@ public class SecurityConfiguration implements WebMvcConfigurer {
             "/swagger-ui.html",
             "/v3/api-docs/**",
             "/assets/**",
-            "/api/users/create"
+            "/api/users/create",
+            "/media/**"
         };
 
     @Override
