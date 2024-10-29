@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginProps {
     onLogin: (username: string, password: string) => void;
@@ -7,19 +8,20 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         try {
             await onLogin(username, password);
         } catch (error) {
-            setError('Login failed. Please check your credentials.');
+            console.log('Login failed. Please check your credentials.');
         }
     };
 
     return (
-        <div className="login-container">
+        <div className="lex flex-col items-center justify-center min-h-screen">
+            <h1 className="text-3xl font-bold mb-6">Login</h1>
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -47,7 +49,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                     </button>
                 </div>
             </form>
-            {error && <p className="text-red-500 mt-4">{error}</p>} {/* Muestra el mensaje de error */}
+            <button 
+                className="mt-4 text-blue-500 underline"
+                onClick={() => navigate('/register')}
+                > Don't have an account? Register
+            </button>
         </div>
     );
 };

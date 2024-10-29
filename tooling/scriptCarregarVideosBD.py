@@ -114,5 +114,5 @@ def process_json_files(directory_path):
         conn.close()
 
 if __name__ == "__main__":
-    directory_path = 'G:/Users/oscar/Documentos/UNI/curso4/lab/store'
+    directory_path = '/Users/giselabusquetsluengo/Desktop/LabSoftwareII/store'
     process_json_files(directory_path)

@@ -1,24 +1,15 @@
 import React from 'react';
-import './VideoCard.css';
+import { VideosDTO } from '../types/videoInterfaces';
 
-interface VideoCardProps {
-    title: string;
-    //author: string;
-    //imageUrl: string;
-}
-
-const VideoCard: React.FC<VideoCardProps> = ({ title/*, author, imageUrl*/ }) => {
+const VideoCard: React.FC<VideosDTO> = ({ /*id,*/ title, owner, image }) => {
     return (
-        <div className="video-card">
-            <h3 className="video-card__title">{title}</h3>
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden w-64 m-4 transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+            <img src={`data:image/webp;base64,${image}`} className="w-full h-48 object-cover" />
+            <div className="p-4">
+                <h3 className="text-lg font-bold mb-2">{title}</h3>
+                <p className="text-gray-600 text-sm">{owner}</p>
+            </div>
         </div>
-        // <div className="video-card">
-        //     <img src={imageUrl} alt={title} className="video-card__image" />
-        //     <div className="video-card__info">
-        //         <h3 className="video-card__title">{title}</h3>
-        //         <p className="video-card__author">{author}</p>
-        //     </div>
-        // </div>
     );
 };
 
