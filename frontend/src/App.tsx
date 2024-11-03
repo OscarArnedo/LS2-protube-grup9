@@ -18,13 +18,13 @@ function App() {
   const handleLogin = async (username: string, password: string) => {
     try {
         const response = await login(username, password);
-        console.log('Login successful:', response);
+        console.log('LoginPage successful:', response);
         setIsAuthenticated(true);
         localStorage.setItem('token', response.token);
         navigate('/');
     } catch (error) {
-        console.error('Login failed:', error);
-        toast.error('Login failed. Please check your credentials');
+        console.error('LoginPage failed:', error);
+        toast.error('LoginPage failed. Please check your credentials');
     }
   };
 

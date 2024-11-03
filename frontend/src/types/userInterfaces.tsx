@@ -1,7 +1,7 @@
 export interface LoginResponse {
     token: string;
 }
-export interface RegisterResponse {
+export interface UserDTO {
     id: string;
     name: string;
     email: string;

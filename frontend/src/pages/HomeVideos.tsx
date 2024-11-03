@@ -1,10 +1,10 @@
 import React from 'react';
-import VideoCard from './VideoCard';
-import { HomeVideosDTO } from '../types/videoInterfaces';
+import VideoCard from '../components/VideoCard.tsx';
+import { HomeVideosDTO } from '../types/videoInterfaces.tsx';
 
 
-const VideoGallery: React.FC<HomeVideosDTO> = ({ videos }) => {
-  return (
+const HomeVideos: React.FC<HomeVideosDTO> = ({ videos }) => {
+    return (
     <div>
       <header className="App-header m-10">
         <h1 className="text-3xl font-bold my-4">Welcome to ProTube</h1>
@@ -23,4 +23,4 @@ const VideoGallery: React.FC<HomeVideosDTO> = ({ videos }) => {
   );
 };
 
-export default VideoGallery;
+export default HomeVideos;

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type {LoginResponse, RegisterResponse} from '../types/userInterfaces'
+import type {LoginResponse, UserDTO} from '../types/userInterfaces'
 
   export const login = async (username: string, password: string): Promise<LoginResponse> => {
     try {
@@ -14,9 +14,9 @@ import type {LoginResponse, RegisterResponse} from '../types/userInterfaces'
     }
 };
 
-export const register = async (name: string, email: string, password: string): Promise<RegisterResponse> => {
+export const register = async (name: string, email: string, password: string): Promise<UserDTO> => {
     try {
-        const response = await axios.post<RegisterResponse>('http://localhost:8080/api/users/create', { 
+        const response = await axios.post<UserDTO>('http://localhost:8080/api/users/create', {
             name,
             email,
             password,
