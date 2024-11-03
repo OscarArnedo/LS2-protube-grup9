@@ -2,9 +2,9 @@ POST http://localhost:8080/api/users/create
 content-type: application/json
 
 {
-  "name": "oarnedo",
+  "name": "Luis",
   "password": "password123",
-  "email": "oarnedo@edu.tecnocampus.cat"
+  "email": "lacostas@edu.tecnocampus.cat"
 }
 
 ###
@@ -12,7 +12,7 @@ POST http://localhost:8080/authenticate
 content-type: application/json
 
 {
-  "username": "oarnedo",
+  "username": "Luis",
   "password": "password123"
 }
 > {%
@@ -22,4 +22,22 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/api/videos
+
+
+###
+GET http://localhost:8080/api/videos/0
+
+
+###
+PUT http://localhost:8080/api/videos/0
 Authorization: {{auth_token}}
+content-type: application/json
+
+{
+  "id": 0,
+  "width": 1920,
+  "height": 1080,
+  "duration": 24,
+  "title": "Bruno Mars - 24K Magic (Official Music Video)",
+  "username": "Bruno Martes"
+}

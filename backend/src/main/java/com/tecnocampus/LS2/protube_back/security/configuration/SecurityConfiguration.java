@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpMethod.GET;
@@ -17,8 +19,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfiguration {
+public class SecurityConfiguration implements WebMvcConfigurer {
     private static final String[] WHITE_LIST_URL = {
+            "/",
+            "/api/videos",
+            "/api/videos/{id}",
             "/authenticate",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -26,8 +31,18 @@ public class SecurityConfiguration {
             "/webjars/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",
+            "/assets/**",
             "/api/users/create"
         };
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -52,6 +67,8 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
                                 .requestMatchers(POST,"/user/create").permitAll()
+                                .requestMatchers(PUT,"/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                //.requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()
                                 .authenticated()

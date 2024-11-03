@@ -1,0 +1,28 @@
+export interface LoginResponse {
+    token: string;
+}
+export interface RegisterResponse {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+}
+
+export interface RegisterDTO {
+    name: string;
+    lastname: string;
+    username: string;
+    email: string;
+    password: string;
+}
+
+export interface AuthenticateDTO {
+    username: string;
+    password: string;
+}
+
+export type UsersResponseFromAPI = Array<{
+    name: string;
+    email: string;
+    password: string;
+}>

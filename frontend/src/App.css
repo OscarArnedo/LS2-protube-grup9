@@ -1,8 +1,24 @@
 .App {
     text-align: center;
   }
+
+.video-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.video-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    max-width: 200px;
+    text-align: left;
+}
   
-  .App-logo {
+  /* .App-logo {
     height: 40vmin;
     pointer-events: none;
   }
@@ -36,4 +52,14 @@
       transform: rotate(360deg);
     }
   }
-  
+
+  .toast-center {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999; 
+    width: fit-content; 
+}
+
+   */
