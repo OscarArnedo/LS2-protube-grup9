@@ -28,4 +28,8 @@ public class CommentController {
         return commentService.createComment(commentDTO);
     }
 
+    @PutMapping("/update/{commentId}")
+    public CommentDTO updateComment(@PathVariable Long commentId, @RequestBody CommentDTO commentDTO) throws Exception {
+        return commentService.updateComment(commentId, commentDTO);
+    }
 }

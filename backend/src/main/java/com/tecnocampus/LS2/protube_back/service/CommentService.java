@@ -37,4 +37,14 @@ public class CommentService {
 
         return new CommentDTO(comment);
     }
+
+    public CommentDTO updateComment(Long commentId, CommentDTO commentDTO) throws Exception {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new Exception("Comment not found"));
+
+        comment.setComment_text(commentDTO.getComment_text());
+
+        comment = commentRepository.save(comment);
+
+        return new CommentDTO(comment);
+    }
 }
