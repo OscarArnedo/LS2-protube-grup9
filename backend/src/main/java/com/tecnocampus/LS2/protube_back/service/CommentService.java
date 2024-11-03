@@ -22,7 +22,6 @@ public class CommentService {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
     }
-    //TODO: Create, update, delete
 
     public CommentDTO createComment(CommentDTO commentDTO) throws Exception {
         Video video = videoRepository.findById(commentDTO.getVideoId()).orElseThrow(() -> new Exception("Video not found"));
@@ -46,5 +45,11 @@ public class CommentService {
         comment = commentRepository.save(comment);
 
         return new CommentDTO(comment);
+    }
+
+    public void deleteComment(Long commentId) throws Exception {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new Exception("Comment not found"));
+
+        commentRepository.delete(comment);
     }
 }

@@ -21,7 +21,6 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    //TODO: create, update, delete
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public CommentDTO createComment(@RequestBody CommentDTO commentDTO) throws Exception {
@@ -31,5 +30,10 @@ public class CommentController {
     @PutMapping("/update/{commentId}")
     public CommentDTO updateComment(@PathVariable Long commentId, @RequestBody CommentDTO commentDTO) throws Exception {
         return commentService.updateComment(commentId, commentDTO);
+    }
+
+    @DeleteMapping("/delete/{commentId}")
+    public void deleteComment(@PathVariable Long commentId) throws Exception {
+        commentService.deleteComment(commentId);
     }
 }

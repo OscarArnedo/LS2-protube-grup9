@@ -72,6 +72,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                                 .requestMatchers(PUT,"/api/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 .requestMatchers(POST, "/api/comments/create").permitAll()
                                 .requestMatchers(PUT, "/api/comments/update/{id}").permitAll()
+                                .requestMatchers(DELETE, "/api/comments/delete/{id}").permitAll()
                                 //.requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()
