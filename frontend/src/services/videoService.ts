@@ -11,7 +11,7 @@ export const fetchVideos = async (): Promise<VideosDTO[]> => {
   }
 };
 
-export const fetchVideoById = async (id: number): Promise<VideoMetaDataDTODTO> => {
+export const fetchVideoById = async (id: number): Promise<VideoMetaDataDTO> => {
   try {
     const response = await axios.get(`http://localhost:8080/api/videos/${id}`);
     return response.data;
@@ -21,14 +21,13 @@ export const fetchVideoById = async (id: number): Promise<VideoMetaDataDTODTO> =
   }
 };
 
-export const fetchVideoMedia = async (id: number): Promise<Blob> => {
+export const fetchVideoMedia = async (id: number): Promise<string> => {
   try {
     const response = await axios.get(`http://localhost:8080/media/${id}.mp4`, {
       responseType: 'blob'
     });
     const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-    const videoUrl = URL.createObjectURL(videoBlob);
-    return videoUrl;
+    return URL.createObjectURL(videoBlob);
   } catch (error) {
     console.error('Error fetching video media', error);
     throw error;

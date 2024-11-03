@@ -1,4 +1,4 @@
-import type {UserDTO} from 'userInterfaces'
+import type {UserDTO} from './userInterfaces';
 
 export interface VideosDTO {
     id: number;
