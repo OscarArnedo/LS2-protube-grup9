@@ -11,12 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentDTO {
     private Long id;
+    private Long videoId;
     private String comment_text;
-    private String comment_author;
+    private String comment_authorId;
 
     public CommentDTO(Comment comment) {
         this.id = comment.getId();
+        this.videoId = comment.getVideo().getId();
         this.comment_text = comment.getComment_text();
-        this.comment_author = comment.getComment_author();
+        this.comment_authorId = comment.getComment_authorId();
     }
 }

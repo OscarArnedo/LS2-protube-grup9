@@ -22,10 +22,10 @@ public class CommentController {
     }
 
     //TODO: create, update, delete
-    /*@ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/create")
     public CommentDTO createComment(@RequestBody CommentDTO commentDTO) throws Exception {
         return commentService.createComment(commentDTO);
-    }*/
+    }
 
 }

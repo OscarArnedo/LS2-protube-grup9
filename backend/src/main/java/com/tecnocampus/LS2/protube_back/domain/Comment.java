@@ -18,10 +18,10 @@ public class Comment {
     private Video video;
 
     private String comment_text;
-    private String comment_author;
+    private String comment_authorId;
 
     public Comment(CommentDTO commentDTO) {
         this.comment_text = commentDTO.getComment_text();
-        this.comment_author = commentDTO.getComment_author();
+        this.comment_authorId = commentDTO.getComment_authorId();
     }
 }
