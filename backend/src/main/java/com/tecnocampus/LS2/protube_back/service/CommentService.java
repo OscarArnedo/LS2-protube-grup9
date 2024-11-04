@@ -9,8 +9,6 @@ import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
@@ -25,31 +23,24 @@ public class CommentService {
 
     public CommentDTO createComment(CommentDTO commentDTO) throws Exception {
         Video video = videoRepository.findById(commentDTO.getVideoId()).orElseThrow(() -> new Exception("Video not found"));
-
         User author = userRepository.findById(commentDTO.getAuthor().getId()).orElseThrow(() -> new Exception("User not found"));
 
         Comment comment = new Comment(commentDTO);
         comment.setVideo(video);
         comment.setAuthor(author);
-
         comment = commentRepository.save(comment);
-
         return new CommentDTO(comment);
     }
 
     public CommentDTO updateComment(Long commentId, String newText) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new Exception("Comment not found"));
-
         comment.setComment_text(newText);
-
         comment = commentRepository.save(comment);
-
         return new CommentDTO(comment);
     }
 
     public void deleteComment(Long commentId) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new Exception("Comment not found"));
-
         commentRepository.delete(comment);
     }
 }
