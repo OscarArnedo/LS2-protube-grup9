@@ -16,7 +16,7 @@ public class VideoMetaDataDTO {
     private Long height;
     private Long duration;
     private String videoPath;
-    private String image;
+    private String imagePath;
     private String title;
     private UserDTO owner;
     private List<CommentDTO> comments;
@@ -30,6 +30,8 @@ public class VideoMetaDataDTO {
         this.duration = video.getDuration();
         this.title = video.getTitle();
         this.owner = new UserDTO(video.getOwner());
+        this.videoPath = video.getVideoPath();
+        this.imagePath = video.getImagePath();
     }
 
     @Override
@@ -40,7 +42,7 @@ public class VideoMetaDataDTO {
                 ", height=" + height +
                 ", duration=" + duration +
                 ", videoPath='" + videoPath + '\'' +
-                ", image='" + image + '\'' +
+                ", imagePath='" + imagePath + '\'' +
                 ", title='" + title + '\'' +
                 ", owner=" + owner +
                 '}';

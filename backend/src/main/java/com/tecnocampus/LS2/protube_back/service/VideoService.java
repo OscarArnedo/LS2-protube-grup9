@@ -35,8 +35,7 @@ public class VideoService {
     public List<VideoDTO> getVideos(){
         List<Video> videos = videoRepository.findAll();
         return videos.stream().map(video -> {
-            VideoDTO videoDTO = new VideoDTO(video);
-            videoDTO.setImage(convertImageToBase64(video.getImagePath()));
+            VideoDTO videoDTO = new VideoDTO(video);;
             return videoDTO;
         }).collect(Collectors.toList());
     }
@@ -59,18 +58,9 @@ public class VideoService {
         Video video = videoRepository.findById(id).orElseThrow(() -> new VideoNotFoundException(id));
         List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
+
         videoMetaDataDTO.setImage(convertImageToBase64(video.getImagePath()));
         videoMetaDataDTO.setComments(comments.stream().map(comment -> new CommentDTO(comment)).collect(Collectors.toList()));
         return videoMetaDataDTO;
-    }
-
-    private String convertImageToBase64(String imagePath) {
-        try {
-            File imageFile = new File(imagePath);
-            byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-            return Base64.getEncoder().encodeToString(imageBytes);
-        } catch (IOException e) {
-            throw new ConvertImageException("Error converting image at path " + imagePath + " to base64");
-        }
     }
 }

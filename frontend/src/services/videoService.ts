@@ -21,6 +21,19 @@ export const fetchVideoById = async (id: number): Promise<VideoMetaDataDTO> => {
   }
 };
 
+export const fetchImageMedia = async (id: number): Promise<string> => {
+    try {
+        const response = await axios.get(`http://localhost:8080/media/${id}.webp`, {
+        responseType: 'blob'
+        });
+        const imageBlob = new Blob([response.data], { type: 'image/webp' });
+        return URL.createObjectURL(imageBlob);
+    } catch (error) {
+        console.error('Error fetching image media', error);
+        throw error;
+    }
+}
+
 export const fetchVideoMedia = async (id: number): Promise<string> => {
   try {
     const response = await axios.get(`http://localhost:8080/media/${id}.mp4`, {
