@@ -2,7 +2,6 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {login, register} from './services/userService';
-import './index.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { fetchVideos } from './services/videoService';
