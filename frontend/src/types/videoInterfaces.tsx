@@ -11,6 +11,12 @@ export interface HomeVideosDTO {
     videos: VideosDTO[];
 }
 
+export interface CommentDTO {
+    id: number;
+    comment_text: string;
+    author: UserDTO;
+}
+
 export interface VideoMetaDataDTO {
     id: number;
     width: number;
@@ -20,4 +26,5 @@ export interface VideoMetaDataDTO {
     duration: number;
     imagePath: string;
     videoPath: string;
+    comments: CommentDTO[];
 }
