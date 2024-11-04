@@ -28,3 +28,8 @@ export interface VideoMetaDataDTO {
     videoPath: string;
     comments: CommentDTO[];
 }
+
+export interface Like{
+    id: number;
+    count: number;
+}

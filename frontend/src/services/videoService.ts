@@ -37,3 +37,13 @@ const fetchMedia = async (fileName: string, fileType:string): Promise<string> =>
         throw error;
     }
 }
+
+export const updateComment = async (commentId: number, commentText: string) => {
+  const response = await axios.put(`http://localhost:8080/api/comments/${commentId}`, { comment_text: commentText });
+  return response.data;
+};
+
+export const deleteComment = async (commentId: number) => {
+  const response = await axios.delete(`http://localhost:8080/api/comments/${commentId}`);
+  return response.data;
+};

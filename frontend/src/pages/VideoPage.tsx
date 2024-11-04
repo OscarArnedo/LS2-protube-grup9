@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { VideoMetaDataDTO } from '../types/videoInterfaces';
-import { fetchVideoById, fetchVideoMedia } from '../services/videoService';
+import { VideoMetaDataDTO, Like } from '../types/videoInterfaces';
+import { fetchVideoById, fetchVideoMedia, updateComment, deleteComment } from '../services/videoService';
+import avatar from '../assets/avatar.png';
+import like from '../assets/like.png';
+import dislike from '../assets/dislike.png';
+
 
 const VideoPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [video, setVideo] = useState<VideoMetaDataDTO | null>(null);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const navigate = useNavigate();
+    //const { isAuthenticated } = useAuth();
+    const [likes, setLikes] = useState<Like[]>([]);
+    const [dislikes, setDislikes] = useState<Like[]>([]);
+    const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+    const [editingCommentText, setEditingCommentText] = useState<string>('');
 
     useEffect(() => {
         const fetchVideoData = async () => {
@@ -21,6 +30,9 @@ const VideoPage: React.FC = () => {
 
                 const url = await fetchVideoMedia(videoData.videoPath);
                 setVideoUrl(url);
+
+                setLikes(videoData.comments.map(comment => ({ id: comment.id, count: 0 })));
+                setDislikes(videoData.comments.map(comment => ({ id: comment.id, count: 0 })));
             } catch (error) {
                 console.error('Error fetching video data', error);
             }
@@ -29,6 +41,65 @@ const VideoPage: React.FC = () => {
         fetchVideoData();
     }, [id, navigate]);
 
+    const handleLike = (commentId: number) => {
+        setLikes(likes.map(like => 
+            like.id === commentId ? { ...like, count: like.count + 1 } : like
+        ));
+    };
+
+    const handleDislike = (commentId: number) => {
+        setDislikes(dislikes.map(dislike => 
+            dislike.id === commentId ? { ...dislike, count: dislike.count + 1 } : dislike
+        ));
+    };
+    const handleEdit = (commentId: number, commentText: string) => {
+        /*if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }*/
+        setEditingCommentId(commentId);
+        setEditingCommentText(commentText);
+    };
+
+    const handleSaveEdit = async (commentId: number) => {
+        try {
+            await updateComment(commentId, editingCommentText);
+            setVideo(prevVideo => {
+                if (!prevVideo) return prevVideo;
+                return {
+                    ...prevVideo,
+                    comments: prevVideo.comments.map(comment =>
+                        comment.id === commentId ? { ...comment, comment_text: editingCommentText } : comment
+                    )
+                };
+            });
+
+            setEditingCommentId(null);
+            setEditingCommentText('');
+        } catch (error) {
+            console.error('Error updating comment', error);
+        }
+    };
+
+    const handleDelete = async (commentId: number) => {
+        /*if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }*/
+        try {
+            await deleteComment(commentId);
+            setVideo(prevVideo => {
+                if (!prevVideo) return prevVideo;
+                return {
+                    ...prevVideo,
+                    comments: prevVideo.comments.filter(comment => comment.id !== commentId)
+                };
+            });
+        } catch (error) {
+            console.error('Error deleting comment', error);
+        }
+    };
+    
     if (!video) {
         return <div>Loading...</div>;
     }
@@ -46,25 +117,75 @@ const VideoPage: React.FC = () => {
             )}
             <div className="w-full max-w-4xl">
                 <h1 className="text-2xl font-bold mb-2">{video.title}</h1>
-                <h2 className="text-lg text-gray-600 mb-4">{video.owner.name}</h2>
+                <h2 className="text-lg text-gray-600 mb-4 text-left">{video.owner.name}</h2>
             </div>
-            <div className="w-full max-w-4xl">
+            <div className="w-full max-w-4xl bg-gray-100 p-4 rounded-lg">
                 <h2 className="text-lg font-bold mb-2">Comments</h2>
                 {video.comments.map((comment) => (
-                    <div key={comment.id} className="flex mb-4">
+                    <div key={comment.id} className="flex mb-4 bg-white p-4 rounded-lg shadow">
                         <div className="mr-4">
                             <img
-                                src={comment.author.avatarUrl}
+                                src={avatar}
                                 alt="avatar"
                                 className="w-10 h-10 rounded-full"
                             />
                         </div>
-                        <div>
-                            <h3 className="text-md font-bold">{comment.author.name}</h3>
-                            <p className="text-sm text-gray-600">{comment.comment_text}</p>
-                            <div className="flex items-center mt-2">
-                                <button className="text-blue-500 text-sm mr-4">Like</button>
-                                <button className="text-blue-500 text-sm">Reply</button>
+                        <div className="flex-1">
+                        <h3 className="text-md font-bold text-left">{comment.author.name}</h3>
+                        {editingCommentId === comment.id ? (
+                            <div>
+                                <textarea
+                                    className="w-full p-2 border rounded"
+                                    value={editingCommentText}
+                                    onChange={(e) => setEditingCommentText(e.target.value)}
+                                />
+                                <button
+                                    className="text-blue-500 text-sm mr-2"
+                                    onClick={() => handleSaveEdit(comment.id)}
+                                >
+                                    Save
+                                </button>
+                                <button
+                                    className="text-blue-500 text-sm"
+                                    onClick={() => {
+                                        setEditingCommentId(null);
+                                        setEditingCommentText('');
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-600 text-left max-w-full">{comment.comment_text}</p>
+                        )}
+                        <div className="flex items-center mt-2">
+                            <button 
+                                className="text-blue-500 text-sm mr-4 flex items-center"
+                                onClick={() => handleLike(comment.id)}
+                            >
+                                <img src={like} alt="Like" className="w-5 h-5 inline-block mr-1" />
+                                <span>{likes.find(like => like.id === comment.id)?.count || 0}</span>
+                            </button>
+                            <button 
+                                className="text-blue-500 text-sm mr-4 flex items-center"
+                                onClick={() => handleDislike(comment.id)}
+                            >
+                                <img src={dislike} alt="Dislike" className="w-5 h-5 inline-block mr-1" />
+                                <span>{dislikes.find(dislike => dislike.id === comment.id)?.count || 0}</span>
+                            </button>
+                            <div className="flex-grow"></div>
+                            <button 
+                                className="text-blue-500 text-sm mr-2"
+                                onClick={() => handleEdit(comment.id, comment.comment_text)}
+                            >
+                                Edit
+                            </button>
+                            <button 
+                                className="text-blue-500 text-sm"
+                                onClick={() => handleDelete(comment.id)}
+                            >
+                                Delete
+                            </button>
                             </div>
                         </div>
                     </div>
