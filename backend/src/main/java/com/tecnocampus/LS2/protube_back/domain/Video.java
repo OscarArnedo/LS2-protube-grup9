@@ -4,6 +4,8 @@ import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "videos")
@@ -23,7 +25,6 @@ public class Video {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-
 
     public Video() {
     }
