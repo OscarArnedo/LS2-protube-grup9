@@ -13,12 +13,12 @@ public class CommentDTO {
     private Long id;
     private Long videoId;
     private String comment_text;
-    private String comment_authorId;
+    private UserDTO author;
 
     public CommentDTO(Comment comment) {
         this.id = comment.getId();
         this.videoId = comment.getVideo().getId();
         this.comment_text = comment.getComment_text();
-        this.comment_authorId = comment.getComment_authorId();
+        this.author = new UserDTO(comment.getAuthor());
     }
 }

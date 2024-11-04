@@ -26,21 +26,21 @@ public class CommentService {
     public CommentDTO createComment(CommentDTO commentDTO) throws Exception {
         Video video = videoRepository.findById(commentDTO.getVideoId()).orElseThrow(() -> new Exception("Video not found"));
 
-        User author = userRepository.findById(commentDTO.getComment_authorId()).orElseThrow(() -> new Exception("User not found"));
+        User author = userRepository.findById(commentDTO.getAuthor().getId()).orElseThrow(() -> new Exception("User not found"));
 
         Comment comment = new Comment(commentDTO);
         comment.setVideo(video);
-        comment.setComment_authorId(author.getId());
+        comment.setAuthor(author);
 
         comment = commentRepository.save(comment);
 
         return new CommentDTO(comment);
     }
 
-    public CommentDTO updateComment(Long commentId, CommentDTO commentDTO) throws Exception {
+    public CommentDTO updateComment(Long commentId, String newText) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new Exception("Comment not found"));
 
-        comment.setComment_text(commentDTO.getComment_text());
+        comment.setComment_text(newText);
 
         comment = commentRepository.save(comment);
 
