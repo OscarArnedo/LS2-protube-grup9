@@ -1,9 +1,16 @@
 import React from 'react';
 import { VideosDTO } from '../types/videoInterfaces';
+import { useNavigate } from 'react-router-dom';
 
-const VideoCard: React.FC<VideosDTO> = ({ /*id,*/ title, owner, image }) => {
+const VideoCard: React.FC<VideosDTO> = ({ id, title, owner, image }) => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate(`/video/${id}`);
+    };
+
     return (
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden w-64 m-4 transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+        <div onClick={handleClick} className="bg-white rounded-lg shadow-lg overflow-hidden w-64 m-4 transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
             <img src={`data:image/webp;base64,${image}`} className="w-full h-48 object-cover" />
             <div className="p-4">
                 <h3 className="text-lg font-bold mb-2">{title}</h3>

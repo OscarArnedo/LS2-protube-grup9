@@ -5,7 +5,7 @@ interface LoginProps {
     onLogin: (username: string, password: string) => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const LoginPage: React.FC<LoginProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         try {
             await onLogin(username, password);
         } catch (error) {
-            console.log('Login failed. Please check your credentials.');
+            console.log('LoginPage failed. Please check your credentials.');
         }
     };
 
@@ -58,4 +58,4 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     );
 };
 
-export default Login;
+export default LoginPage;

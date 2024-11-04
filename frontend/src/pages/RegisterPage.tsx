@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import { register } from '../services/userService';
+import { register } from '../services/userService.ts';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface RegisterProps {
     onRegister: ( name: string, lastName: string, username: string, email: string, password: string) => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onRegister }) => {
+const RegisterPage: React.FC<RegisterProps> = ({ onRegister }) => {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
@@ -129,4 +129,4 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
     );
 };
 
-export default Register;
+export default RegisterPage;
