@@ -32,7 +32,8 @@ public class SecurityConfiguration implements WebMvcConfigurer {
             "/swagger-ui.html",
             "/v3/api-docs/**",
             "/assets/**",
-            "/api/users/create"
+            "/api/users/create",
+            "/media/**"
         };
 
     @Override
@@ -66,8 +67,12 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
-                                .requestMatchers(POST,"/user/create").permitAll()
-                                .requestMatchers(PUT,"/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(POST,"/authenticate").permitAll()
+                                .requestMatchers(POST,"/api/user/create").permitAll()
+                                .requestMatchers(PUT,"/api/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(POST, "/api/comments/create").permitAll()
+                                .requestMatchers(PUT, "/api/comments/update/{id}").permitAll()
+                                .requestMatchers(DELETE, "/api/comments/delete/{id}").permitAll()
                                 //.requestMatchers(GET,"/videos/{id}").hasAnyRole("ADMIN", "USER")
                                 //.requestMatchers(GET,"/courses/{id}").hasAnyRole("ADMIN", "TEACHER")
                                 .anyRequest()

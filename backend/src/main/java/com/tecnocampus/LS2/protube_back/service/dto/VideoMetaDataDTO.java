@@ -5,6 +5,8 @@ import com.tecnocampus.LS2.protube_back.domain.Video;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,6 +19,7 @@ public class VideoMetaDataDTO {
     private String image;
     private String title;
     private UserDTO owner;
+    private List<CommentDTO> comments;
 
     public VideoMetaDataDTO() {
     }
