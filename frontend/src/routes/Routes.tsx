@@ -9,13 +9,12 @@ interface AppRoutesProps {
   handleLogin: (username: string, password: string) => Promise<void>;
   handleRegister: (name: string, email: string, password: string) => Promise<void>;
   isAuthenticated: boolean;
-  videos: Array<{ id: number; title: string; owner: string; image: string }>;
 }
 
-const AppRoutes: React.FC<AppRoutesProps> = ({ handleLogin, handleRegister/*, isAuthenticated*/, videos }) => {
+const AppRoutes: React.FC<AppRoutesProps> = ({ handleLogin, handleRegister/*, isAuthenticated*/ }) => {
   return (
     <Routes>
-      <Route path="/" element={<HomeVideos videos={videos} />} />
+      <Route path="/" element={<HomeVideos />} />
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
       <Route path="/register" element={<RegisterPage onRegister={handleRegister} />} />
       <Route path="/video/:id" element={<VideoPage />} />

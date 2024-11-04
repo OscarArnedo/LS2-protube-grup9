@@ -1,16 +1,13 @@
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {login, register} from './services/userService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { fetchVideos } from './services/videoService';
-import { VideosDTO } from './types/videoInterfaces';
 import AppRoutes from './routes/Routes';
         
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [videos, setVideos] = useState<VideosDTO[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -43,20 +40,6 @@ function App() {
     localStorage.removeItem('token');
     navigate('/login');
   };
-
-  useEffect(() => {
-    const getVideos = async () => {
-      try {
-        const videosData: VideosDTO[] = await fetchVideos();
-        console.log('Videos fetched:', videosData);
-        setVideos(videosData);
-      } catch (error) {
-        console.error('Error fetching videos');
-      }
-    };
-    getVideos();
-  }, []);
-
 
   return(
     <div className="App">
@@ -94,7 +77,6 @@ function App() {
         handleLogin={handleLogin}
         handleRegister={handleRegister}
         isAuthenticated={isAuthenticated}
-        videos={videos}
       />
     </div>
   );
