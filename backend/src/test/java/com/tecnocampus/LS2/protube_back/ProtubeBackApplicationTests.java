@@ -2,6 +2,7 @@ package com.tecnocampus.LS2.protube_back;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;
@@ -36,10 +37,10 @@ class ProtubeBackApplicationTests {
 	private WebApplicationContext webApplicationContext;
 
 	private static ObjectMapper objectMapper;
-
 	private static String createdUserId;
 	private static String randomName;
 	private static String randomEmail;
+	private static Long createdCommentId;
 	private static String passwordEncrypted = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2";
 	private static String password = "password123";
 
@@ -105,6 +106,50 @@ class ProtubeBackApplicationTests {
 
 	@Test
 	@Order(4)
+	void createComment() throws Exception {
+		String comment = """
+				{
+				  "videoId": %d,
+				  "comment_text": "This is a test comment",
+				  "author": {
+					"id": "%s"
+				  }
+				}
+				""".formatted(0, createdUserId);
+
+		MvcResult result = mockMvc.perform(post("/api/comments").contentType(MediaType.APPLICATION_JSON).content(comment))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.comment_text").value("This is a test comment"))
+				.andExpect(jsonPath("$.author.id").value(createdUserId))
+				.andReturn();
+
+		String content = result.getResponse().getContentAsString();
+		CommentDTO commentDTO = objectMapper.readValue(content, CommentDTO.class);
+		createdCommentId = commentDTO.getId();
+	}
+
+	@Test
+	@Order(5)
+	void updateComment() throws Exception {
+		String comment = """
+				{
+				  "text": "This is an updated test comment"
+				}
+				""";
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/comments/"+createdCommentId+"/text").contentType("application/json").content(comment))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.comment_text").value("This is an updated test comment"));
+	}
+
+	@Test
+	@Order(6)
+	void deleteComment() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/"+createdCommentId))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(7)
 	void getUserById() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
 				.andExpect(status().isOk())
@@ -117,7 +162,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(5)
+	@Order(8)
 	void getUsers() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
 				.andExpect(status().isOk())
@@ -147,7 +192,7 @@ class ProtubeBackApplicationTests {
 	}*/
 
 	@Test
-	@Order(6)
+	@Order(9)
 	void deleteUser() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
 				.andExpect(status().isOk());
