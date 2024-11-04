@@ -19,7 +19,7 @@ const VideoPage: React.FC = () => {
                 const videoData = await fetchVideoById(Number(id));
                 setVideo(videoData);
 
-                const url = await fetchVideoMedia(Number(id));
+                const url = await fetchVideoMedia(videoData.videoPath);
                 setVideoUrl(url);
             } catch (error) {
                 console.error('Error fetching video data', error);

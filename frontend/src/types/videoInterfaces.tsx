@@ -4,7 +4,7 @@ export interface VideosDTO {
     id: number;
     title: string;
     owner: string;
-    image: string;
+    imagePath: string;
 }
 
 export interface HomeVideosDTO {
@@ -18,4 +18,6 @@ export interface VideoMetaDataDTO {
     title: string;
     owner: UserDTO;
     duration: number;
+    imagePath: string;
+    videoPath: string;
 }
