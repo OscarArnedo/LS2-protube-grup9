@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/VideoCard.tsx';
 import { VideosDTO } from '../types/videoInterfaces.tsx';
 import {fetchImageMedia, fetchVideos} from '../services/videoService';
-
+import useScrollToTop from '../hooks/scrollToTop.tsx';
 
 const HomeVideos: React.FC = () => {
     const [videos, setVideos] = useState<VideosDTO[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
+    const { isVisible, scrollToTop } = useScrollToTop();
 
     const getVideos = async () => {
         try {
@@ -53,6 +54,14 @@ const HomeVideos: React.FC = () => {
           />
         ))}
       </div>
+      {isVisible && (
+        <button 
+            onClick={scrollToTop} 
+            className="fixed bottom-4 right-4 bg-black text-white rounded-full h-12 w-12 flex items-center justify-center hover:bg-gray-800 transition duration-300"
+        >
+            ↑ {/* Este símbolo representa una flecha hacia arriba */}
+        </button>
+      )}
     </div>
   );
 };
