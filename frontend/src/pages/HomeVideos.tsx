@@ -59,7 +59,7 @@ const HomeVideos: React.FC = () => {
             onClick={scrollToTop} 
             className="fixed bottom-4 right-4 bg-black text-white rounded-full h-12 w-12 flex items-center justify-center hover:bg-gray-800 transition duration-300"
         >
-            ↑ {/* Este símbolo representa una flecha hacia arriba */}
+            ↑
         </button>
       )}
     </div>
