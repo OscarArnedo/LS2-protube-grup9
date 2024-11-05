@@ -59,7 +59,6 @@ public class VideoService {
         List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
 
-        videoMetaDataDTO.setImage(convertImageToBase64(video.getImagePath()));
         videoMetaDataDTO.setComments(comments.stream().map(comment -> new CommentDTO(comment)).collect(Collectors.toList()));
         return videoMetaDataDTO;
     }
