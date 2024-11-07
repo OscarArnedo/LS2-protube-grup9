@@ -5,6 +5,8 @@ import com.tecnocampus.LS2.protube_back.domain.Video;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -14,9 +16,10 @@ public class VideoMetaDataDTO {
     private Long height;
     private Long duration;
     private String videoPath;
-    private String image;
+    private String imagePath;
     private String title;
     private UserDTO owner;
+    private List<CommentDTO> comments;
 
     public VideoMetaDataDTO() {
     }
@@ -27,6 +30,8 @@ public class VideoMetaDataDTO {
         this.duration = video.getDuration();
         this.title = video.getTitle();
         this.owner = new UserDTO(video.getOwner());
+        this.videoPath = video.getVideoPath();
+        this.imagePath = video.getImagePath();
     }
 
     @Override
@@ -37,7 +42,7 @@ public class VideoMetaDataDTO {
                 ", height=" + height +
                 ", duration=" + duration +
                 ", videoPath='" + videoPath + '\'' +
-                ", image='" + image + '\'' +
+                ", imagePath='" + imagePath + '\'' +
                 ", title='" + title + '\'' +
                 ", owner=" + owner +
                 '}';

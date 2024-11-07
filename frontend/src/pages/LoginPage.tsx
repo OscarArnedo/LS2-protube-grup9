@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
+import loginIcon from '../assets/loginIcon.png';
 
 interface LoginProps {
     onLogin: (username: string, password: string) => void;
+    onToggle: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         try {
             await onLogin(username, password);
         } catch (error) {
-            console.log('Login failed. Please check your credentials.');
+            console.log('LoginPage failed. Please check your credentials.');
         }
     };
 
     return (
-        <div className="lex flex-col items-center justify-center min-h-screen">
-            <h1 className="text-3xl font-bold mb-6">Login</h1>
+        <div className="flex flex-col items-center justify-center">
+            <img src={loginIcon} alt="User Icon" className="w-24 h-24 mb-4" />
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -51,11 +53,11 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </form>
             <button 
                 className="mt-4 text-blue-500 underline"
-                onClick={() => navigate('/register')}
+                onClick={onToggle}
                 > Don't have an account? Register
             </button>
         </div>
     );
 };
 
-export default Login;
+export default LoginPage;

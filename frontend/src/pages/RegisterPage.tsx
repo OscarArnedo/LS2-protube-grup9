@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import { register } from '../services/userService';
+import { register } from '../services/userService.ts';
 import 'react-toastify/dist/ReactToastify.css';
+import registerIcon from '../assets/registerIcon.png';
 
 interface RegisterProps {
     onRegister: ( name: string, lastName: string, username: string, email: string, password: string) => void;
+    onToggle: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ onRegister }) => {
+const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
     const [name, setName] = useState('');
     const [lastName, setLastName] = useState('');
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const navigate = useNavigate();
+    //const navigate = useNavigate();
 
     const validatePassword = (password: string) => {
         const minLength = 6;
@@ -46,8 +48,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
     };
 
     return (
-        <div className="register-container">
-            <h1 className="text-3xl font-bold mb-6">Register</h1>
+        <div className="flex flex-col items-center justify-center">
+            <img src={registerIcon} alt="User Icon" className="w-24 h-24 mb-4" />
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
@@ -122,11 +124,11 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             </form>
             <button 
                 className="mt-4 text-blue-500 underline"
-                onClick={() => navigate('/login')}
+                onClick={onToggle}
                 > Already have an account? Login
             </button>
         </div>
     );
 };
 
-export default Register;
+export default RegisterPage;

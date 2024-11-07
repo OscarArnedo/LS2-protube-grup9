@@ -1,9 +1,12 @@
 package com.tecnocampus.LS2.protube_back.service;
 
+import com.tecnocampus.LS2.protube_back.domain.Comment;
 import com.tecnocampus.LS2.protube_back.domain.User;
 import com.tecnocampus.LS2.protube_back.domain.Video;
+import com.tecnocampus.LS2.protube_back.persistance.CommentRepository;
 import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
 import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
+import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.ConvertImageException;
@@ -22,16 +25,17 @@ import java.util.stream.Collectors;
 public class VideoService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
-    public VideoService(VideoRepository videoRepository, UserRepository userRepository) {
+    public VideoService(VideoRepository videoRepository, UserRepository userRepository, CommentRepository commentRepository) {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
     public List<VideoDTO> getVideos(){
         List<Video> videos = videoRepository.findAll();
         return videos.stream().map(video -> {
-            VideoDTO videoDTO = new VideoDTO(video);
-            videoDTO.setImage(convertImageToBase64(video.getImagePath()));
+            VideoDTO videoDTO = new VideoDTO(video);;
             return videoDTO;
         }).collect(Collectors.toList());
     }
@@ -52,18 +56,10 @@ public class VideoService {
 
     public VideoMetaDataDTO getVideoMeta(Long id) {
         Video video = videoRepository.findById(id).orElseThrow(() -> new VideoNotFoundException(id));
+        List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
-        videoMetaDataDTO.setImage(convertImageToBase64(video.getImagePath()));
-        return videoMetaDataDTO;
-    }
 
-    private String convertImageToBase64(String imagePath) {
-        try {
-            File imageFile = new File(imagePath);
-            byte[] imageBytes = Files.readAllBytes(imageFile.toPath());
-            return Base64.getEncoder().encodeToString(imageBytes);
-        } catch (IOException e) {
-            throw new ConvertImageException("Error converting image at path " + imagePath + " to base64");
-        }
+        videoMetaDataDTO.setComments(comments.stream().map(comment -> new CommentDTO(comment)).collect(Collectors.toList()));
+        return videoMetaDataDTO;
     }
 }

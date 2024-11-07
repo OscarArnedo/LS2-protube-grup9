@@ -12,7 +12,7 @@ POST http://localhost:8080/authenticate
 content-type: application/json
 
 {
-  "username": "Luis",
+  "username": "kurzgesagt",
   "password": "password123"
 }
 > {%
@@ -26,7 +26,7 @@ GET http://localhost:8080/api/videos
 
 ###
 GET http://localhost:8080/api/videos/0
-
+Authorization: {{auth_token}}
 
 ###
 PUT http://localhost:8080/api/videos/0
@@ -40,4 +40,16 @@ content-type: application/json
   "duration": 24,
   "title": "Bruno Mars - 24K Magic (Official Music Video)",
   "username": "Bruno Martes"
+}
+
+###
+POST http://localhost:8080/api/comments/create
+Authorization: {{auth_token}}
+content-type: application/json
+
+{
+  "id": 0,
+  "videoId": 0,
+  "comment_text": "holss",
+  "comment_authorId": "a6bc4071-2a03-4463-8d86-e0ea9a84a7fa"
 }

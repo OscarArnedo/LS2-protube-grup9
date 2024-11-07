@@ -4,6 +4,10 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App.tsx";
 import './tailwind.css';
 
+const modalRoot = document.createElement('div');
+modalRoot.setAttribute('id', 'modal-root');
+document.body.appendChild(modalRoot);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>

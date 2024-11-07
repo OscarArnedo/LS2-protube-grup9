@@ -38,9 +38,9 @@ def insert_user(conn, author, created_users):
 
     with conn.cursor() as cur:
         cur.execute("""
-            INSERT INTO users (id, name, email, password)
-            VALUES (%s, %s, %s, %s)
-        """, (user_id, author, email, password))
+            INSERT INTO users (id, name, email)
+            VALUES (%s, %s, %s)
+        """, (user_id, author, email))
 
         cur.execute("""
             INSERT INTO user_security (username, email, password, role)
@@ -61,7 +61,7 @@ def insert_video(conn, video_data, directory_path):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id;
         """, (video_data['id'], video_data['width'], video_data['height'], video_data['duration'], video_data['title'],
-              user_id, f"{directory_path}/{video_data['id']}.webp", f"{directory_path}/{video_data['id']}.mp4"))
+              user_id, f"{video_data['id']}.webp", f"{video_data['id']}.mp4"))
         video_id = cur.fetchone()[0]
 
         # Inserta la metadata
@@ -114,5 +114,5 @@ def process_json_files(directory_path):
         conn.close()
 
 if __name__ == "__main__":
-    directory_path = '/Users/giselabusquetsluengo/Desktop/LabSoftwareII/store'
+    directory_path = 'C:/Universidad/4t/LaboratoriSoftware2/store'
     process_json_files(directory_path)

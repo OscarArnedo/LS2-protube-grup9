@@ -1,13 +1,14 @@
 package com.tecnocampus.LS2.protube_back.service;
 
-import com.tecnocampus.LS2.protube_back.domain.ERole;
-import com.tecnocampus.LS2.protube_back.domain.User;
-import com.tecnocampus.LS2.protube_back.domain.UserSecurity;
+import com.tecnocampus.LS2.protube_back.domain.*;
+import com.tecnocampus.LS2.protube_back.persistance.CommentRepository;
 import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
 import com.tecnocampus.LS2.protube_back.persistance.UserSecurityRepository;
+import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,10 +16,14 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final UserSecurityRepository userSecurityRepository;
+    private final CommentRepository commentRepository;
+    private final VideoRepository videoRepository;
 
-    public UserService(UserRepository userRepository, UserSecurityRepository userSecurityRepository) {
+    public UserService(UserRepository userRepository, UserSecurityRepository userSecurityRepository, CommentRepository commentRepository, VideoRepository videoRepository) {
         this.userRepository = userRepository;
         this.userSecurityRepository = userSecurityRepository;
+        this.commentRepository = commentRepository;
+        this.videoRepository = videoRepository;
     }
 
     public UserDTO createUser(UserDTO userDTO) {
@@ -48,8 +53,19 @@ public class UserService {
         return new UserDTO(userRepository.save(user));
     }
 
+    @Transactional
     public void deleteUser(String id) {
         User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+
+        List<Comment> comments = commentRepository.getCommentsByAuthorId(id);
+        commentRepository.deleteAll(comments);
+
+        List<Video> videos = videoRepository.getVideosByOwner(user);
+        videoRepository.deleteAll(videos);
+
+        userSecurityRepository.delete(userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
+                new UserNotFoundException(user.getEmail())));
+
         userRepository.delete(user);
     }
 }
