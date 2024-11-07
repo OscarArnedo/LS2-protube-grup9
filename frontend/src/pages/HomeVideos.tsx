@@ -22,7 +22,7 @@ const HomeVideos: React.FC = () => {
     const getImages = async (videos: VideosDTO[]) => {
         try {
             const imagePromises = videos.map(async (video) => {
-                const imageUrl = await fetchImageMedia(video.id);
+                const imageUrl = await fetchImageMedia(video.imagePath);
                 return { id: video.id, url: imageUrl };
             });
             const imagesData = await Promise.all(imagePromises);
@@ -50,7 +50,7 @@ const HomeVideos: React.FC = () => {
             id={video.id}
             title={video.title}
             owner={video.owner}
-            image={imageUrls[video.id]}
+            imagePath={imageUrls[video.id]}
           />
         ))}
       </div>
