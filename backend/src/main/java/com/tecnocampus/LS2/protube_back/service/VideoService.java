@@ -1,11 +1,7 @@
 package com.tecnocampus.LS2.protube_back.service;
 
-import com.tecnocampus.LS2.protube_back.domain.Comment;
-import com.tecnocampus.LS2.protube_back.domain.User;
-import com.tecnocampus.LS2.protube_back.domain.Video;
-import com.tecnocampus.LS2.protube_back.persistance.CommentRepository;
-import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
-import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
+import com.tecnocampus.LS2.protube_back.domain.*;
+import com.tecnocampus.LS2.protube_back.persistance.*;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
@@ -20,11 +16,19 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final MetaRepository metaRepository;
+    private final TagRepository tagRepository;
+    private final CategoryRepository categoryRepository;
 
-    public VideoService(VideoRepository videoRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public VideoService(VideoRepository videoRepository, UserRepository userRepository,
+                        CommentRepository commentRepository, MetaRepository metaRepository,
+                        TagRepository tagRepository, CategoryRepository categoryRepository) {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.metaRepository = metaRepository;
+        this.tagRepository = tagRepository;
+        this.categoryRepository = categoryRepository;
     }
     public List<VideoDTO> getVideos(){
         List<Video> videos = videoRepository.findAll();
@@ -53,7 +57,15 @@ public class VideoService {
         List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
 
+        Meta meta = metaRepository.getMetaByVideoId(id);
+        List<Tag> tags = tagRepository.getTagsByVideoId(id);
+        Category category = categoryRepository.getCategoryByVideoId(id);
+
         videoMetaDataDTO.setComments(comments.stream().map(comment -> new CommentDTO(comment)).collect(Collectors.toList()));
+        videoMetaDataDTO.setDescription(meta.getDescription());
+        videoMetaDataDTO.setTags(tags.stream().map(tag -> tag.getTag()).collect(Collectors.toList()));
+        videoMetaDataDTO.setCategories(category.getCategory());
+
         return videoMetaDataDTO;
     }
 }

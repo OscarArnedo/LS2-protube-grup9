@@ -1,10 +1,8 @@
 package com.tecnocampus.LS2.protube_back.domain;
 
-import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
 
 @Data
 @Entity

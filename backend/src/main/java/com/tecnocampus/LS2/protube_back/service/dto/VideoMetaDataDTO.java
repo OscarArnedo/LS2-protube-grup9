@@ -2,27 +2,29 @@ package com.tecnocampus.LS2.protube_back.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tecnocampus.LS2.protube_back.domain.Video;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@Setter
+
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
 public class VideoMetaDataDTO {
     private Long id;
-    private Long width;
+    private String title;
     private Long height;
+    private Long width;
     private Long duration;
+    private UserDTO owner;
     private String videoPath;
     private String imagePath;
-    private String title;
-    private UserDTO owner;
     private List<CommentDTO> comments;
+    private String description;
+    private List<String> tags;
+    private String categories;
 
-    public VideoMetaDataDTO() {
-    }
     public VideoMetaDataDTO(Video video) {
         this.id = video.getId();
         this.width = video.getWidth();
@@ -34,17 +36,4 @@ public class VideoMetaDataDTO {
         this.imagePath = video.getImagePath();
     }
 
-    @Override
-    public String toString() {
-        return "VideoMetaDataDTO{" +
-                "id=" + id +
-                ", width=" + width +
-                ", height=" + height +
-                ", duration=" + duration +
-                ", videoPath='" + videoPath + '\'' +
-                ", imagePath='" + imagePath + '\'' +
-                ", title='" + title + '\'' +
-                ", owner=" + owner +
-                '}';
-    }
 }
