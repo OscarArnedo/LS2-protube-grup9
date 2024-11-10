@@ -117,8 +117,8 @@ const VideoPage: React.FC = () => {
                     />
                     <h2 className="text-lg text-gray-600 text-left">{video.owner.name}</h2>
                 </div>
-                <p className="text-lg text-justify mb-4 whitespace-pre-line">
-                    {showFullDescription ? video.description : `${video.description.substring(0, 150)}...`}
+                <p className="text-lg text-justify mb-12 whitespace-pre-line">
+                    {showFullDescription ? video.description : `${video.description.substring(0, 100)}...`}
                     {video.description.length > 100 && (
                         <span
                             className="text-blue-500 cursor-pointer"
