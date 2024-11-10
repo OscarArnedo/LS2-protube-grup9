@@ -20,6 +20,7 @@ public class VideoMetaDataDTO {
     private String title;
     private UserDTO owner;
     private List<CommentDTO> comments;
+    private String description;
 
     public VideoMetaDataDTO() {
     }
@@ -45,6 +46,8 @@ public class VideoMetaDataDTO {
                 ", imagePath='" + imagePath + '\'' +
                 ", title='" + title + '\'' +
                 ", owner=" + owner +
+                ", comments=" + comments +
+                ", description='" + description + '\'' +
                 '}';
     }
 }

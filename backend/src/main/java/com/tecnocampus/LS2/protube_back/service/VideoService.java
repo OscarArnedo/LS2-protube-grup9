@@ -1,9 +1,11 @@
 package com.tecnocampus.LS2.protube_back.service;
 
 import com.tecnocampus.LS2.protube_back.domain.Comment;
+import com.tecnocampus.LS2.protube_back.domain.Meta;
 import com.tecnocampus.LS2.protube_back.domain.User;
 import com.tecnocampus.LS2.protube_back.domain.Video;
 import com.tecnocampus.LS2.protube_back.persistance.CommentRepository;
+import com.tecnocampus.LS2.protube_back.persistance.MetaRepository;
 import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
 import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
@@ -26,11 +28,13 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
+    private final MetaRepository metaRepository;
 
-    public VideoService(VideoRepository videoRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public VideoService(VideoRepository videoRepository, UserRepository userRepository, CommentRepository commentRepository, MetaRepository metaRepository) {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.metaRepository = metaRepository;
     }
     public List<VideoDTO> getVideos(){
         List<Video> videos = videoRepository.findAll();
@@ -59,7 +63,11 @@ public class VideoService {
         List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
 
+        Meta meta = metaRepository.getMetaByVideoId(id);
+
         videoMetaDataDTO.setComments(comments.stream().map(comment -> new CommentDTO(comment)).collect(Collectors.toList()));
+        videoMetaDataDTO.setDescription(meta.getDescription());
+
         return videoMetaDataDTO;
     }
 }

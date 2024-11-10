@@ -43,6 +43,9 @@ content-type: application/json
 }
 
 ###
+GET http://localhost:8080/media/0.webp
+
+###
 POST http://localhost:8080/api/comments/create
 Authorization: {{auth_token}}
 content-type: application/json
