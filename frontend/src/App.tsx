@@ -1,4 +1,5 @@
 import './App.css';
+import logo from './assets/logo.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
@@ -14,6 +15,7 @@ function App() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [isRegistering, setRegistering] = useState(false);
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleLogin = async (username: string, password: string) => {
         try {
@@ -56,50 +58,79 @@ function App() {
       setModalOpen(true);
     };
 
-    return (
-        <div className="App">
-            <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 9999,
-                    pointerEvents: 'none',
-                }}
-            />
-            <div className="flex justify-end p-4">
+    const handleSearch = () => {
+      console.log("Buscar:", searchQuery);
+  };
+  //ALGO ASI LEER PARA EL BUSCADOR
+  const [articles, setArticles] = useState([
+    { id: 1, title: "Primer artículo" },
+    { id: 2, title: "Segundo artículo" },
+    { id: 3, title: "Tercer artículo" },
+  ]);
+
+  const filteredArticles = articles.filter(article =>
+    article.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="App">
+        <ToastContainer />
+
+        {/* Header fijo con logo y título */}
+        <header className="header bg-gray-800 text-white p-4 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+                {/* Logo */}
+                <img src={logo} alt="Logo" className="h-12 w-12" /> {/* Ajusta el tamaño según necesites */}
+                {/* Título */}
+                <h1 className="text-lg font-bold">PROTUBE</h1>
+            </div>
+
+            {/* Barra de Búsqueda */}
+            <div className="search-bar flex items-center gap-2">
+                <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="p-1 rounded bg-gray-200 text-black"
+                />
+                <button
+                    onClick={handleSearch}
+                    className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
+                >
+                    Buscar
+                </button>
+            </div>
+
+            {/* Botón de Login/Logout */}
+            <nav>
                 {location.pathname !== '/login' && location.pathname !== '/register' && (
                     isAuthenticated ? (
-                        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit" onClick={handleLogout}>
+                        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300" onClick={handleLogout}>
                             Logout
                         </button>
                     ) : (
-                        <>
-                            <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit" onClick={openLoginModal}>
-                                Login
-                            </button>
-                        </>
+                        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300" onClick={() => setModalOpen(true)}>
+                            Login
+                        </button>
                     )
                 )}
-            </div>
+            </nav>
+        </header>
+
+        <main style={{ paddingTop: '100px' }}>
             <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)}>
                 {isRegistering ? (
-                    <RegisterPage onRegister={handleRegister} onToggle={openLoginModal} />
+                    <RegisterPage onRegister={handleRegister} onToggle={() => setRegistering(false)} />
                 ) : (
-                    <LoginPage onLogin={handleLogin} onToggle={openRegisterModal} />
+                    <LoginPage onLogin={handleLogin} onToggle={() => setRegistering(true)} />
                 )}
             </Modal>
 
             <AppRoutes />
-        </div>
-    );
+        </main>
+    </div>
+);
 }
 
 export default App;
