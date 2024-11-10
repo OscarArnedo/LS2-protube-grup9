@@ -1,5 +1,7 @@
 import './App.css';
-import logo from './assets/logo.png';
+import logo from './assets/logoProtube.png';
+import search from './assets/searchIcon.png';
+import loginIcon from './assets/loginIcon.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
@@ -48,7 +50,7 @@ function App() {
         navigate('/');
     };
 
-    const openLoginModal = () => {
+    /*const openLoginModal = () => {
       setRegistering(false);
       setModalOpen(true);
     };
@@ -56,7 +58,7 @@ function App() {
     const openRegisterModal = () => {
       setRegistering(true);
       setModalOpen(true);
-    };
+    };*/
 
     const handleSearch = () => {
       console.log("Buscar:", searchQuery);
@@ -76,29 +78,27 @@ function App() {
     <div className="App">
         <ToastContainer />
 
-        {/* Header fijo con logo y título */}
         <header className="header bg-gray-800 text-white p-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
-                {/* Logo */}
-                <img src={logo} alt="Logo" className="h-12 w-12" /> {/* Ajusta el tamaño según necesites */}
-                {/* Título */}
-                <h1 className="text-lg font-bold">PROTUBE</h1>
+                <button onClick={() => navigate('/')} className="flex items-center gap-2">
+                    <img src={logo} alt="Logo" className="h-12 w-12" />
+                    <h1 className="text-lg font-bold">PROTUBE</h1>
+                </button>
             </div>
 
             {/* Barra de Búsqueda */}
             <div className="search-bar flex items-center gap-2">
                 <input
                     type="text"
-                    placeholder="Buscar..."
+                    placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="p-1 rounded bg-gray-200 text-black"
                 />
                 <button
                     onClick={handleSearch}
-                    className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600"
                 >
-                    Buscar
+                    <img src={search} alt="Search" className="h-6 w-6" />
                 </button>
             </div>
 
@@ -106,12 +106,14 @@ function App() {
             <nav>
                 {location.pathname !== '/login' && location.pathname !== '/register' && (
                     isAuthenticated ? (
-                        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300" onClick={handleLogout}>
+                        <button className="text-white py-1 px-4 rounded hover:bg-gray-900 transition duration-300" onClick={handleLogout}>
                             Logout
                         </button>
                     ) : (
-                        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300" onClick={() => setModalOpen(true)}>
+                        <button 
+                            className="text-white py-1 px-4 rounded hover:bg-gray-900 transition duration-300 flex items-center gap-2" onClick={() => setModalOpen(true)}>
                             Login
+                            <img src={loginIcon} alt="Login" className="h-6 w-6" />
                         </button>
                     )
                 )}

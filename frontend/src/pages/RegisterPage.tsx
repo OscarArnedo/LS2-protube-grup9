@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import { register } from '../services/userService.ts';
 import 'react-toastify/dist/ReactToastify.css';
-import registerIcon from '../assets/registerIcon.png';
+import registerModalIcon from '../assets/registerModalIcon.png';
 
 interface RegisterProps {
     onRegister: ( name: string, lastName: string, username: string, email: string, password: string) => void;
@@ -46,7 +46,7 @@ const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            <img src={registerIcon} alt="User Icon" className="w-24 h-24 mb-4" />
+            <img src={registerModalIcon} alt="User Icon" className="w-24 h-24 mb-4" />
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
