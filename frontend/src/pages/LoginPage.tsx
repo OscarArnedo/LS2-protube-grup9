@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
 import loginIcon from '../assets/loginIcon.png';
 
 interface LoginProps {
@@ -10,7 +9,6 @@ interface LoginProps {
 const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    //const navigate = useNavigate();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();

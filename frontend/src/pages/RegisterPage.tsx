@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import { register } from '../services/userService.ts';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,7 +16,6 @@ const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    //const navigate = useNavigate();
 
     const validatePassword = (password: string) => {
         const minLength = 6;
@@ -39,7 +37,6 @@ const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
         }
         try {
             await register( username, email, password );
-            // Llamar a onRegister para indicar que el registro fue exitoso
             onRegister(name, lastName, username, email, password);
         } catch (error) {
             toast.error('Error al registrarse. Intente nuevamente.');
