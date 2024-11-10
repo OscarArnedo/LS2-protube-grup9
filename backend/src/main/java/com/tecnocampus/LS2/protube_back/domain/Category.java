@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
 @NoArgsConstructor
-@Table(name = "video_meta")
-public class Meta {
+@Entity
+@Table(name = "video_categories")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,5 +16,5 @@ public class Meta {
     @ManyToOne
     private Video video;
 
-    private String description;
+    private String category;
 }

@@ -1,13 +1,10 @@
 package com.tecnocampus.LS2.protube_back.service.dto;
 
 import com.tecnocampus.LS2.protube_back.domain.Comment;
-import com.tecnocampus.LS2.protube_back.domain.Video;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class CommentDTO {
     private Long id;

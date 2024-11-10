@@ -65,7 +65,7 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$[0].id").exists())
 				.andExpect(jsonPath("$[0].title").exists())
 				.andExpect(jsonPath("$[0].owner").exists())
-				.andExpect(jsonPath("$[0].image").exists());
+				.andExpect(jsonPath("$[0].imagePath").exists());
 	}
 	@Test
 	@Order(2)
@@ -79,7 +79,15 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$.width").value(1920))
 				.andExpect(jsonPath("$.duration").value(24))
 				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
-				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"));
+				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"))
+				.andExpect(jsonPath("$.videoPath").value("0.mp4"))
+				.andExpect(jsonPath("$.imagePath").value("0.webp"))
+				.andExpect(jsonPath("$.comments").isArray())
+				.andExpect(jsonPath("$.description").exists())
+				.andExpect(jsonPath("$.tags").isArray())
+				.andExpect(jsonPath("$.categories").value("Music"));
+
+
 	}
 
 	@Test

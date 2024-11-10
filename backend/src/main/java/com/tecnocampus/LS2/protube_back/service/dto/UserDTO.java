@@ -2,13 +2,9 @@ package com.tecnocampus.LS2.protube_back.service.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tecnocampus.LS2.protube_back.domain.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-import java.util.List;
-
-@Getter
-@Setter
+@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     private String id;

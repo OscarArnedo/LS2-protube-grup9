@@ -7,14 +7,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "video_meta")
-public class Meta {
+@Table(name = "video_tags")
+public class Tag {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     private Video video;
 
-    private String description;
+    private String tag;
+
 }

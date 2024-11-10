@@ -26,7 +26,7 @@ GET http://localhost:8080/api/videos
 
 ###
 GET http://localhost:8080/api/videos/0
-Authorization: {{auth_token}}
+
 
 ###
 PUT http://localhost:8080/api/videos/0
