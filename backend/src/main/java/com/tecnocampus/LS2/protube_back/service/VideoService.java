@@ -9,15 +9,9 @@ import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
-import com.tecnocampus.LS2.protube_back.service.exception.ConvertImageException;
-import com.tecnocampus.LS2.protube_back.service.exception.UserNotFoundException;
-import com.tecnocampus.LS2.protube_back.service.exception.VideoNotFoundException;
+import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,8 +35,8 @@ public class VideoService {
     }
 
     public VideoDTO updateVideo(Long id, String name, VideoMetaDataDTO videoMetaDataDTO) {
-        User user = userRepository.findByName(name).orElseThrow(() -> new UserNotFoundException(name));
-        Video video = videoRepository.findById(id).orElseThrow(()->new VideoNotFoundException(id));
+        User user = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
+        Video video = videoRepository.findById(id).orElseThrow(()->new EntityNotFound(Video.class, "id", id));
         if(!video.getOwner().getName().equals(user.getName())){
             throw new RuntimeException("You are not the owner of the video!!!");
         }
@@ -55,7 +49,7 @@ public class VideoService {
     }
 
     public VideoMetaDataDTO getVideoMeta(Long id) {
-        Video video = videoRepository.findById(id).orElseThrow(() -> new VideoNotFoundException(id));
+        Video video = videoRepository.findById(id).orElseThrow(() -> new EntityNotFound(Video.class, "id", id));
         List<Comment> comments = commentRepository.getCommentsByVideoId(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
 
