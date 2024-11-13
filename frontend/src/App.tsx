@@ -2,7 +2,7 @@ import './App.css';
 import logo from './assets/logoProtube.png';
 import search from './assets/searchIcon.png';
 import loginIcon from './assets/loginIcon.png';
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import Modal from './components/Modal';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AppRoutes from './routes/Routes';
+import { getCookie, setCookie, deleteCookie } from './utils/cookies';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,17 +20,26 @@ function App() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
 
-    const handleLogin = async (username: string, password: string) => {
+    useEffect(() => {
+        const token = getCookie('authToken');
+        if (token) {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    const handleLogin = async (username: string, password: string): Promise<string> => {
         try {
             const response = await login(username, password);
-            console.log('LoginPage successful:', response);
+            console.log('Login successful:', response);
             setIsAuthenticated(true);
-            localStorage.setItem('token', response.token);
+            setCookie('authToken', response.token, 7); // Save token in cookies for 7 days
             setModalOpen(false);
             navigate('/');
+            return response.token;
         } catch (error) {
-            console.error('LoginPage failed:', error);
-            toast.error('LoginPage failed. Please check your credentials');
+            console.error('Login failed:', error);
+            toast.error('Login failed. Please check your credentials');
+            throw error; // Re-throw the error to maintain the Promise<string> signature
         }
     };
 
@@ -46,7 +56,7 @@ function App() {
 
     const handleLogout = () => {
         setIsAuthenticated(false);
-        localStorage.removeItem('token');
+        deleteCookie('authToken'); // Remove token from cookies
         navigate('/');
     };
 
@@ -63,7 +73,7 @@ function App() {
     const handleSearch = () => {
       console.log("Buscar:", searchQuery);
   };
-  //ALGO ASI LEER PARA EL BUSCADOR
+  /*ALGO ASI LEER PARA EL BUSCADOR
   const [articles, setArticles] = useState([
     { id: 1, title: "Primer artículo" },
     { id: 2, title: "Segundo artículo" },
@@ -72,7 +82,7 @@ function App() {
 
   const filteredArticles = articles.filter(article =>
     article.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  );*/
 
   return (
     <div className="App">
