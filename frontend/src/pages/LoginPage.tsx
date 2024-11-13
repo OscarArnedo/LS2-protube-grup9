@@ -15,7 +15,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
         evt.preventDefault();
         try {
             const token = await onLogin(username, password);
-            setCookie('authToken', token, 7); // Save token in cookies for 7 days
+            setCookie('authToken', token, 7);
         } catch (error) {
             console.log('LoginPage failed. Please check your credentials.');
         }
