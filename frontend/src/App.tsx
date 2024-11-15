@@ -22,6 +22,7 @@ function App() {
 
     useEffect(() => {
         const token = getCookie('authToken');
+        console.log('Token:', token);
         if (token) {
             setIsAuthenticated(true);
         }
@@ -32,10 +33,10 @@ function App() {
             const response = await login(username, password);
             console.log('Login successful:', response);
             setIsAuthenticated(true);
-            setCookie('authToken', response.token, 7); // Save token in cookies for 7 days
+            setCookie('authToken', response.access_token, 7);
             setModalOpen(false);
             navigate('/');
-            return response.token;
+            return response.access_token;
         } catch (error) {
             console.error('Login failed:', error);
             toast.error('Login failed. Please check your credentials');
