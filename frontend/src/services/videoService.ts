@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type {VideoMetaDataDTO, VideosDTO} from '../types/videoInterfaces'
+import {getCookie} from "../utils/cookies.ts";
 
 export const fetchVideos = async (): Promise<VideosDTO[]> => {
   try {
@@ -39,7 +40,13 @@ const fetchMedia = async (fileName: string, fileType:string): Promise<string> =>
 }
 
 export const updateComment = async (commentId: number, commentText: string) => {
-  const response = await axios.put(`http://localhost:8080/api/comments/${commentId}`, { comment_text: commentText });
+    const token = getCookie('authToken');
+    const response = await axios.patch(`http://localhost:8080/api/comments/${commentId}/text`, { "text": commentText },
+      {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      });
   return response.data;
 };
 
