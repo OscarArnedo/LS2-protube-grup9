@@ -45,6 +45,7 @@ class ProtubeBackApplicationTests {
 	private static Long createdCommentId;
 	private final static String passwordEncrypted = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2";
 	private final static String password = "password123";
+	private static String token;
 
 	private String authenticate(String username, String password) throws Exception {
 		String body = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
@@ -131,17 +132,15 @@ class ProtubeBackApplicationTests {
 		String comment = """
 				{
 				  "videoId": %d,
-				  "comment_text": "This is a test comment",
-				  "author": {
-					"id": "%s"
-				  }
+				  "comment_text": "This is a test comment"
 				}
-				""".formatted(0, createdUserId);
+				""".formatted(0);
 
 		String token = authenticate(randomName, password);
 		MvcResult result = mockMvc.perform(post("/api/comments")
 						.header("Authorization", "Bearer " + token)
-						.contentType(MediaType.APPLICATION_JSON).content(comment))
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(comment))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.comment_text").value("This is a test comment"))
 				.andExpect(jsonPath("$.author.id").value(createdUserId))
@@ -157,14 +156,15 @@ class ProtubeBackApplicationTests {
 		String comment = """
 				{
 				  "videoId": %d,
-				  "comment_text": "This is a test comment",
-				  "author": {
-					"id": "%s"
-				  }
+				  "comment_text": "This is a test comment"
 				}
-				""".formatted(0, "123");
+				""".formatted(0);
+		String token = authenticate(randomName, password);
 		assertThrows(Exception.class, () -> {
-			mockMvc.perform(post("/api/comments").contentType(MediaType.APPLICATION_JSON).content(comment))
+			mockMvc.perform(post("/api/comments")
+							.header("Authorization", "Bearer " + token)
+							.contentType(MediaType.APPLICATION_JSON)
+							.content(comment))
 					.andExpect(status().isCreated())
 					.andExpect(jsonPath("$.comment_text").value("This is a test comment"))
 					.andExpect(jsonPath("$.author.id").value(createdUserId));
@@ -179,7 +179,11 @@ class ProtubeBackApplicationTests {
 				  "text": "This is an updated test comment"
 				}
 				""";
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/comments/"+createdCommentId+"/text").header("Authorization", "Bearer " + authenticate(randomName, password)).contentType("application/json").content(comment))
+		String token = authenticate(randomName, password);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/comments/"+createdCommentId+"/text")
+						.header("Authorization", "Bearer " + token)
+						.contentType("application/json")
+						.content(comment))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.comment_text").value("This is an updated test comment"));
 	}
@@ -187,7 +191,9 @@ class ProtubeBackApplicationTests {
 	@Test
 	@Order(6)
 	void deleteComment() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/"+createdCommentId).header("Authorization", "Bearer " + authenticate(randomName, password)))
+		String token = authenticate(randomName, password);
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/"+createdCommentId)
+						.header("Authorization", "Bearer " + token))
 				.andExpect(status().isOk());
 	}
 
