@@ -33,8 +33,11 @@ public class CommentService {
         return new CommentDTO(comment);
     }
 
-    public CommentDTO updateComment(Long commentId, String newText) throws Exception {
+    public CommentDTO updateComment(Long commentId, String newText, String username) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFound(Comment.class, "id", commentId.toString()));
+        if (!comment.getAuthor().getName().equals(username)) {
+            throw new RuntimeException("You are not the author of the comment!");
+        }
         comment.setComment_text(newText);
         comment = commentRepository.save(comment);
         return new CommentDTO(comment);
