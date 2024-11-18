@@ -47,6 +47,7 @@ public class UserService {
 
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
 
         return new UserDTO(userRepository.save(user));
     }
