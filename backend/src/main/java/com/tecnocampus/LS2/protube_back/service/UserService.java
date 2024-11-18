@@ -6,7 +6,7 @@ import com.tecnocampus.LS2.protube_back.persistance.UserRepository;
 import com.tecnocampus.LS2.protube_back.persistance.UserSecurityRepository;
 import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
-import com.tecnocampus.LS2.protube_back.service.exception.UserNotFoundException;
+import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +35,7 @@ public class UserService {
     }
 
     public UserDTO getUser(String id) {
-        return new UserDTO(userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id)));
+        return new UserDTO(userRepository.findById(id).orElseThrow(()->new EntityNotFound(User.class, "id", id)));
     }
 
     public List<UserDTO> getUsers() {
@@ -43,8 +43,7 @@ public class UserService {
     }
 
     public UserDTO updateUser(String id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
-        //TODO Validate if the userDTO is valid
+        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFound(User.class, "id", id));
 
         user.setName(userDTO.getName());
         user.setEmail(userDTO.getEmail());
@@ -55,7 +54,7 @@ public class UserService {
 
     @Transactional
     public void deleteUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(()->new UserNotFoundException(id));
+        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFound(User.class, "id", id));
 
         List<Comment> comments = commentRepository.getCommentsByAuthorId(id);
         commentRepository.deleteAll(comments);
@@ -64,7 +63,7 @@ public class UserService {
         videoRepository.deleteAll(videos);
 
         userSecurityRepository.delete(userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
-                new UserNotFoundException(user.getEmail())));
+                new EntityNotFound(UserSecurity.class, "email", user.getEmail())));
 
         userRepository.delete(user);
     }

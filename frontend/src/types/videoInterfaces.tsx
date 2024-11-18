@@ -27,6 +27,9 @@ export interface VideoMetaDataDTO {
     imagePath: string;
     videoPath: string;
     comments: CommentDTO[];
+    description: string;
+    tags: string[];
+    categories: string[];
 }
 
 export interface Like{

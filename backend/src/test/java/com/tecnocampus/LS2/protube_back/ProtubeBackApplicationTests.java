@@ -19,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -65,7 +66,7 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$[0].id").exists())
 				.andExpect(jsonPath("$[0].title").exists())
 				.andExpect(jsonPath("$[0].owner").exists())
-				.andExpect(jsonPath("$[0].image").exists());
+				.andExpect(jsonPath("$[0].imagePath").exists());
 	}
 	@Test
 	@Order(2)
@@ -79,7 +80,15 @@ class ProtubeBackApplicationTests {
 				.andExpect(jsonPath("$.width").value(1920))
 				.andExpect(jsonPath("$.duration").value(24))
 				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
-				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"));
+				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"))
+				.andExpect(jsonPath("$.videoPath").value("0.mp4"))
+				.andExpect(jsonPath("$.imagePath").value("0.webp"))
+				.andExpect(jsonPath("$.comments").isArray())
+				.andExpect(jsonPath("$.description").exists())
+				.andExpect(jsonPath("$.tags").isArray())
+				.andExpect(jsonPath("$.categories").value("Music"));
+
+
 	}
 
 	@Test
@@ -129,6 +138,25 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
+	void badCreateComment() throws Exception {
+		String comment = """
+				{
+				  "videoId": %d,
+				  "comment_text": "This is a test comment",
+				  "author": {
+					"id": "%s"
+				  }
+				}
+				""".formatted(0, "123");
+		assertThrows(Exception.class, () -> {
+			mockMvc.perform(post("/api/comments").contentType(MediaType.APPLICATION_JSON).content(comment))
+					.andExpect(status().isCreated())
+					.andExpect(jsonPath("$.comment_text").value("This is a test comment"))
+					.andExpect(jsonPath("$.author.id").value(createdUserId));
+		});
+	}
+
+	@Test
 	@Order(5)
 	void updateComment() throws Exception {
 		String comment = """
@@ -149,6 +177,14 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
+	void badDeleteComment() throws Exception {
+		assertThrows(Exception.class, () -> {
+			mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/1235"))
+					.andExpect(status().isNotFound());
+		});
+	}
+
+	@Test
 	@Order(7)
 	void getUserById() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
@@ -159,6 +195,14 @@ class ProtubeBackApplicationTests {
 
 		assertEquals(randomName, userDTO.getName());
 		assertEquals(randomEmail, userDTO.getEmail());
+	}
+
+	@Test
+	void badGetUserById() throws Exception {
+		assertThrows(Exception.class, () -> {
+			mockMvc.perform(MockMvcRequestBuilders.get("/api/users/1235"))
+					.andExpect(status().isNotFound());
+		});
 	}
 
 	@Test
@@ -196,5 +240,13 @@ class ProtubeBackApplicationTests {
 	void deleteUser() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
 				.andExpect(status().isOk());
+	}
+
+	@Test
+	void badDeleteUser() throws Exception {
+		assertThrows(Exception.class, () -> {
+			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))
+					.andExpect(status().isNotFound());
+		});
 	}
 }

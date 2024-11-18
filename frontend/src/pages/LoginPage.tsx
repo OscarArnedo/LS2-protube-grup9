@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
-import loginIcon from '../assets/loginIcon.png';
+import loginModalIcon from '../assets/loginModalIcon.png';
 
 interface LoginProps {
     onLogin: (username: string, password: string) => void;
@@ -10,7 +9,6 @@ interface LoginProps {
 const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    //const navigate = useNavigate();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
@@ -23,7 +21,7 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            <img src={loginIcon} alt="User Icon" className="w-24 h-24 mb-4" />
+            <img src={loginModalIcon} alt="User Icon" className="w-24 h-24 mb-4" />
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
