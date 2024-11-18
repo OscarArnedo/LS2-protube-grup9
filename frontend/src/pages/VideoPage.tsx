@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { VideoMetaDataDTO, Like } from '../types/videoInterfaces';
-import { fetchVideoById, fetchVideoMedia, updateComment, deleteComment } from '../services/videoService';
+import React, {useEffect, useState} from 'react';
+import {useParams, useNavigate} from 'react-router-dom';
+import {VideoMetaDataDTO, Like} from '../types/videoInterfaces';
+import {fetchVideoById, fetchVideoMedia, updateComment, deleteComment, createComment} from '../services/videoService';
 import avatar from '../assets/avatar.png';
 import like from '../assets/like.png';
 import dislike from '../assets/dislike.png';
 
 const VideoPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const [video, setVideo] = useState<VideoMetaDataDTO | null>(null);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -16,6 +16,7 @@ const VideoPage: React.FC = () => {
     const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
     const [editingCommentText, setEditingCommentText] = useState<string>('');
     const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
+    const [newCommentText, setNewCommentText] = useState<string>('');
 
     useEffect(() => {
         const fetchVideoData = async () => {
@@ -30,8 +31,8 @@ const VideoPage: React.FC = () => {
                 const url = await fetchVideoMedia(videoData.videoPath);
                 setVideoUrl(url);
 
-                setLikes(videoData.comments.map(comment => ({ id: comment.id, count: 0 })));
-                setDislikes(videoData.comments.map(comment => ({ id: comment.id, count: 0 })));
+                setLikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
+                setDislikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
             } catch (error) {
                 console.error('Error fetching video data', error);
             }
@@ -42,13 +43,13 @@ const VideoPage: React.FC = () => {
 
     const handleLike = (commentId: number) => {
         setLikes(likes.map(like =>
-            like.id === commentId ? { ...like, count: like.count + 1 } : like
+            like.id === commentId ? {...like, count: like.count + 1} : like
         ));
     };
 
     const handleDislike = (commentId: number) => {
         setDislikes(dislikes.map(dislike =>
-            dislike.id === commentId ? { ...dislike, count: dislike.count + 1 } : dislike
+            dislike.id === commentId ? {...dislike, count: dislike.count + 1} : dislike
         ));
     };
 
@@ -60,12 +61,13 @@ const VideoPage: React.FC = () => {
     const handleSaveEdit = async (commentId: number) => {
         try {
             await updateComment(commentId, editingCommentText);
+            console.log(commentId, editingCommentText);
             setVideo(prevVideo => {
                 if (!prevVideo) return prevVideo;
                 return {
                     ...prevVideo,
                     comments: prevVideo.comments.map(comment =>
-                        comment.id === commentId ? { ...comment, comment_text: editingCommentText } : comment
+                        comment.id === commentId ? {...comment, comment_text: editingCommentText} : comment
                     )
                 };
             });
@@ -91,7 +93,22 @@ const VideoPage: React.FC = () => {
             console.error('Error deleting comment', error);
         }
     };
+    const handleCreateComment = async () => {
+        try {
+            const newComment = await createComment(Number(id), newCommentText);
 
+            setVideo(prevVideo => {
+                if (!prevVideo) return prevVideo;
+                return {
+                    ...prevVideo,
+                    comments: [newComment, ...prevVideo.comments]
+                };
+            });
+            setNewCommentText('');
+        } catch (error) {
+            console.error('Error creating comment', error);
+        }
+    };
     if (!video) {
         return <div>Loading...</div>;
     }
@@ -129,8 +146,23 @@ const VideoPage: React.FC = () => {
                     )}
                 </p>
             </div>
+
             <div className="w-full max-w-4xl bg-gray-100 p-4 rounded-lg">
                 <h2 className="text-lg font-bold mb-2">Comments</h2>
+                <div className="mt-4 flex items-center">
+                    <textarea
+                        className="w-full p-2 border rounded mb-2 mr-2"
+                        placeholder="Add a comment..."
+                        value={newCommentText}
+                        onChange={(e) => setNewCommentText(e.target.value)}
+                    />
+                    <button
+                        className="text-white bg-blue-500 hover:bg-blue-700 text-sm py-2 px-4 rounded"
+                        onClick={handleCreateComment}
+                    >
+                        Add Comment
+                    </button>
+                </div>
                 {video.comments.map((comment) => (
                     <div key={comment.id} className="flex mb-4 bg-white p-4 rounded-lg shadow">
                         <div className="mr-4">
@@ -140,6 +172,7 @@ const VideoPage: React.FC = () => {
                                 className="w-10 h-10 rounded-full"
                             />
                         </div>
+
                         <div className="flex-1">
                             <h3 className="text-md font-bold text-left">{comment.author.name}</h3>
                             {editingCommentId === comment.id ? (
@@ -173,14 +206,14 @@ const VideoPage: React.FC = () => {
                                     className="text-blue-500 text-sm mr-4 flex items-center"
                                     onClick={() => handleLike(comment.id)}
                                 >
-                                    <img src={like} alt="Like" className="w-5 h-5 inline-block mr-1" />
+                                    <img src={like} alt="Like" className="w-5 h-5 inline-block mr-1"/>
                                     <span>{likes.find(like => like.id === comment.id)?.count || 0}</span>
                                 </button>
                                 <button
                                     className="text-blue-500 text-sm mr-4 flex items-center"
                                     onClick={() => handleDislike(comment.id)}
                                 >
-                                    <img src={dislike} alt="Dislike" className="w-5 h-5 inline-block mr-1" />
+                                    <img src={dislike} alt="Dislike" className="w-5 h-5 inline-block mr-1"/>
                                     <span>{dislikes.find(dislike => dislike.id === comment.id)?.count || 0}</span>
                                 </button>
                                 <div className="flex-grow"></div>

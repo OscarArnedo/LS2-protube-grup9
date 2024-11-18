@@ -24,8 +24,8 @@ public class CommentController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public CommentDTO createComment(@RequestBody CommentDTO commentDTO) throws Exception {
-        return commentService.createComment(commentDTO);
+    public CommentDTO createComment(@RequestBody CommentDTO commentDTO, Principal principal) throws Exception {
+        return commentService.createComment(commentDTO, principal.getName());
     }
 
     @PatchMapping("/{commentId}/text")
@@ -35,7 +35,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId) throws Exception {
-        commentService.deleteComment(commentId);
+    public void deleteComment(@PathVariable Long commentId,Principal principal) throws Exception {
+        commentService.deleteComment(commentId, principal.getName());
     }
 }

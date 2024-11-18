@@ -46,13 +46,26 @@ content-type: application/json
 GET http://localhost:8080/media/0.webp
 
 ###
-POST http://localhost:8080/api/comments/create
+POST http://localhost:8080/api/comments
 Authorization: {{auth_token}}
 content-type: application/json
 
 {
-  "id": 0,
-  "videoId": 0,
-  "comment_text": "holss",
-  "comment_authorId": "a6bc4071-2a03-4463-8d86-e0ea9a84a7fa"
+  "videoId": 100,
+  "comment_text": "Al oscar no le gustwetrfasda"
 }
+
+###
+PATCH http://localhost:8080/api/comments/929/text
+Authorization: {{auth_token}}
+content-type: application/json
+
+{
+  "text": "hola oscar"
+}
+
+###
+DELETE http://localhost:8080/api/comments/929
+Authorization: {{auth_token}}
+content-type: application/json
+
