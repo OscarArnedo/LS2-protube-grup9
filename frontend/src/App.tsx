@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AppRoutes from './routes/Routes';
 import { getCookie, setCookie, deleteCookie } from './utils/cookies';
+import { useUser } from './contexts/UserContext';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,6 +20,7 @@ function App() {
     const [isRegistering, setRegistering] = useState(false);
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
+    const { fetchCurrentUser } = useUser();
 
     useEffect(() => {
         const token = getCookie('authToken');
@@ -34,6 +36,7 @@ function App() {
             console.log('Login successful:', response);
             setIsAuthenticated(true);
             setCookie('authToken', response.access_token, 7);
+            await fetchCurrentUser();
             setModalOpen(false);
             navigate('/');
             return response.access_token;
@@ -55,25 +58,17 @@ function App() {
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setIsAuthenticated(false);
         deleteCookie('authToken'); // Remove token from cookies
+        await fetchCurrentUser();
         navigate('/');
     };
-
-    /*const openLoginModal = () => {
-      setRegistering(false);
-      setModalOpen(true);
-    };
-
-    const openRegisterModal = () => {
-      setRegistering(true);
-      setModalOpen(true);
-    };*/
 
     const handleSearch = () => {
         console.log("Buscar:", searchQuery);
     };
+    
     /*ALGO ASI LEER PARA EL BUSCADOR
     const [articles, setArticles] = useState([
       { id: 1, title: "Primer artículo" },
