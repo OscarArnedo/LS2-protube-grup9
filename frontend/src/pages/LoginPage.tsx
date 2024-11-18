@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import loginModalIcon from '../assets/loginModalIcon.png';
 import { setCookie } from '../utils/cookies';
+import { useUser } from '../contexts/UserContext';
 
 interface LoginProps {
     onLogin: (username: string, password: string) => Promise<string>;
@@ -10,14 +11,17 @@ interface LoginProps {
 const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const { login, logout } = useUser();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         try {
             const token = await onLogin(username, password);
             setCookie('authToken', token, 7);
+            login();
         } catch (error) {
             console.log('LoginPage failed. Please check your credentials.');
+            logout();
         }
     };
 

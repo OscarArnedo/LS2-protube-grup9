@@ -69,3 +69,6 @@ DELETE http://localhost:8080/api/comments/929
 Authorization: {{auth_token}}
 content-type: application/json
 
+###
+GET http://localhost:8080/api/users/userDetails
+Authorization: {{auth_token}}

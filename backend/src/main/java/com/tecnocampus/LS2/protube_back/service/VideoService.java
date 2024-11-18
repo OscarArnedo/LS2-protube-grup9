@@ -54,7 +54,7 @@ public class VideoService {
 
     public VideoMetaDataDTO getVideoMeta(Long id) {
         Video video = videoRepository.findById(id).orElseThrow(() -> new EntityNotFound(Video.class, "id", id));
-        List<Comment> comments = commentRepository.getCommentsByVideoId(id);
+        List<Comment> comments = commentRepository.getCommentsByVideoIdOrderByIdDesc(id);
         VideoMetaDataDTO videoMetaDataDTO = new VideoMetaDataDTO(video);
 
         Meta meta = metaRepository.getMetaByVideoId(id);

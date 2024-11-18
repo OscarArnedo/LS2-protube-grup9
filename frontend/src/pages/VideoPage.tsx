@@ -5,6 +5,7 @@ import {fetchVideoById, fetchVideoMedia, updateComment, deleteComment, createCom
 import avatar from '../assets/avatar.png';
 import like from '../assets/like.png';
 import dislike from '../assets/dislike.png';
+import {useUser} from '../contexts/UserContext';
 
 const VideoPage: React.FC = () => {
     const {id} = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ const VideoPage: React.FC = () => {
     const [editingCommentText, setEditingCommentText] = useState<string>('');
     const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
     const [newCommentText, setNewCommentText] = useState<string>('');
+    const {currentUser, isAuthenticated } = useUser();
 
     useEffect(() => {
         const fetchVideoData = async () => {
@@ -33,6 +35,9 @@ const VideoPage: React.FC = () => {
 
                 setLikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
                 setDislikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
+                console.log('Current user:', currentUser);
+                console.log('Video data:', videoData);
+                console.log('Authenticated:', isAuthenticated);
             } catch (error) {
                 console.error('Error fetching video data', error);
             }
@@ -150,18 +155,24 @@ const VideoPage: React.FC = () => {
             <div className="w-full max-w-4xl bg-gray-100 p-4 rounded-lg">
                 <h2 className="text-lg font-bold mb-2">Comments</h2>
                 <div className="mt-4 flex items-center">
-                    <textarea
-                        className="w-full p-2 border rounded mb-2 mr-2"
-                        placeholder="Add a comment..."
-                        value={newCommentText}
-                        onChange={(e) => setNewCommentText(e.target.value)}
-                    />
-                    <button
-                        className="text-white bg-blue-500 hover:bg-blue-700 text-sm py-2 px-4 rounded"
-                        onClick={handleCreateComment}
-                    >
-                        Add Comment
-                    </button>
+                    {isAuthenticated ? (
+                        <>
+                            <textarea
+                                className="w-full p-2 border rounded mb-2 mr-2"
+                                placeholder="Add a comment..."
+                                value={newCommentText}
+                                onChange={(e) => setNewCommentText(e.target.value)}
+                            />
+                            <button
+                                className="text-white bg-blue-500 hover:bg-blue-700 text-sm py-2 px-4 rounded"
+                                onClick={handleCreateComment}
+                            >
+                                Add Comment
+                            </button>
+                            </>
+                            ) : (
+                                <p className="text-sm text-gray-600">Login to add a comment</p>
+                            )}
                 </div>
                 {video.comments.map((comment) => (
                     <div key={comment.id} className="flex mb-4 bg-white p-4 rounded-lg shadow">
@@ -217,18 +228,22 @@ const VideoPage: React.FC = () => {
                                     <span>{dislikes.find(dislike => dislike.id === comment.id)?.count || 0}</span>
                                 </button>
                                 <div className="flex-grow"></div>
-                                <button
-                                    className="text-blue-500 text-sm mr-2"
-                                    onClick={() => handleEdit(comment.id, comment.comment_text)}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    className="text-blue-500 text-sm"
-                                    onClick={() => handleDelete(comment.id)}
-                                >
-                                    Delete
-                                </button>
+                                {isAuthenticated && currentUser?.name === comment.author.name && (
+                                    <>
+                                        <button
+                                            className="text-blue-500 text-sm mr-2"
+                                            onClick={() => handleEdit(comment.id, comment.comment_text)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="text-blue-500 text-sm"
+                                            onClick={() => handleDelete(comment.id)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
