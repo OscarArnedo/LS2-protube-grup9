@@ -1,9 +1,7 @@
 package com.tecnocampus.LS2.protube_back.domain;
 
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
 
@@ -16,6 +14,7 @@ public class User {
     @Id
     private String id = UUID.randomUUID().toString();
 
+    @Column(unique = true)
     private String name;
 
     @Email

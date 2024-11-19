@@ -1,5 +1,5 @@
 export interface LoginResponse {
-    token: string;
+    access_token: string;
 }
 export interface UserDTO {
     id: string;
@@ -26,3 +26,11 @@ export type UsersResponseFromAPI = Array<{
     email: string;
     password: string;
 }>
+
+export interface UserContextType {
+    currentUser: UserDTO | null;
+    isAuthenticated: boolean;
+    login: () => void;
+    logout: () => void;
+    fetchCurrentUser: () => Promise<void>;
+}

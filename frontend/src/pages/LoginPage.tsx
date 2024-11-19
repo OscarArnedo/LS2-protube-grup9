@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import loginModalIcon from '../assets/loginModalIcon.png';
+import { setCookie } from '../utils/cookies';
+import { useUser } from '../contexts/UserContext';
 
 interface LoginProps {
-    onLogin: (username: string, password: string) => void;
+    onLogin: (username: string, password: string) => Promise<string>;
     onToggle: () => void;
 }
 
 const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const { login, logout } = useUser();
 
     const handleSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
         try {
-            await onLogin(username, password);
+            const token = await onLogin(username, password);
+            setCookie('authToken', token, 7);
+            login();
         } catch (error) {
             console.log('LoginPage failed. Please check your credentials.');
+            logout();
         }
     };
 
@@ -42,14 +48,14 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
                     required
                 />
                 <div className="flex justify-center">
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-300 w-fit"
                         > Login
                     </button>
                 </div>
             </form>
-            <button 
+            <button
                 className="mt-4 text-blue-500 underline"
                 onClick={onToggle}
                 > Don't have an account? Register

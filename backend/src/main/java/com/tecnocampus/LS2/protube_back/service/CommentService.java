@@ -22,9 +22,9 @@ public class CommentService {
         this.userRepository = userRepository;
     }
 
-    public CommentDTO createComment(CommentDTO commentDTO) throws Exception {
+    public CommentDTO createComment(CommentDTO commentDTO, String username) throws Exception {
         Video video = videoRepository.findById(commentDTO.getVideoId()).orElseThrow(() -> new EntityNotFound(Video.class, "id", commentDTO.getVideoId().toString()));
-        User author = userRepository.findById(commentDTO.getAuthor().getId()).orElseThrow(() -> new EntityNotFound(User.class, "id", commentDTO.getAuthor().getId().toString()));
+        User author = userRepository.findByName(username).orElseThrow(() -> new EntityNotFound(User.class, "name", username));
 
         Comment comment = new Comment(commentDTO);
         comment.setVideo(video);
@@ -33,15 +33,20 @@ public class CommentService {
         return new CommentDTO(comment);
     }
 
-    public CommentDTO updateComment(Long commentId, String newText) throws Exception {
+    public CommentDTO updateComment(Long commentId, String newText, String username) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFound(Comment.class, "id", commentId.toString()));
+        if (!comment.getAuthor().getName().equals(username)) {
+            throw new RuntimeException("You are not the author of the comment!");
+        }
         comment.setComment_text(newText);
         comment = commentRepository.save(comment);
         return new CommentDTO(comment);
     }
-
-    public void deleteComment(Long commentId) throws Exception {
+    public void deleteComment(Long commentId, String username) throws Exception {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new EntityNotFound(Comment.class, "id", commentId.toString()));
+        if(!comment.getAuthor().getName().equals(username)) {
+            throw new RuntimeException("You are not the author of the comment!");
+        }
         commentRepository.delete(comment);
     }
 }
