@@ -130,15 +130,16 @@ class ProtubeBackApplicationTests {
 	@Order(4)
 	void createComment() throws Exception {
 		String comment = """
-				{
-				  "videoId": %d,
-				  "comment_text": "This is a test comment"
-				}
-				""".formatted(0);
+            {
+              "videoId": %d,
+              "comment_text": "This is a test comment"
+            }
+            """.formatted(0);
 
 		String token = authenticate(randomName, password);
 		MvcResult result = mockMvc.perform(post("/api/comments")
 						.header("Authorization", "Bearer " + token)
+						.principal(() -> randomName)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(comment))
 				.andExpect(status().isCreated())
@@ -152,17 +153,19 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
+	@Order(5)
 	void badCreateComment() throws Exception {
 		String comment = """
 				{
 				  "videoId": %d,
 				  "comment_text": "This is a test comment"
 				}
-				""".formatted(0);
+				""".formatted(2345678);
 		String token = authenticate(randomName, password);
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(post("/api/comments")
 							.header("Authorization", "Bearer " + token)
+							.principal(() -> randomName)
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(comment))
 					.andExpect(status().isCreated())
@@ -172,41 +175,46 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	void updateComment() throws Exception {
 		String comment = """
-				{
-				  "text": "This is an updated test comment"
-				}
-				""";
+            {
+              "text": "This is an updated test comment"
+            }
+            """;
 		String token = authenticate(randomName, password);
-		mockMvc.perform(MockMvcRequestBuilders.patch("/api/comments/"+createdCommentId+"/text")
+		System.out.println("commentId" + createdCommentId);
+		mockMvc.perform(MockMvcRequestBuilders.patch("/api/comments/" + createdCommentId + "/text")
 						.header("Authorization", "Bearer " + token)
-						.contentType("application/json")
+						.principal(() -> randomName)
+						.contentType(MediaType.APPLICATION_JSON)
 						.content(comment))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.comment_text").value("This is an updated test comment"));
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	void deleteComment() throws Exception {
 		String token = authenticate(randomName, password);
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/"+createdCommentId)
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/" + createdCommentId)
+						.principal(() -> randomName)
 						.header("Authorization", "Bearer " + token))
 				.andExpect(status().isOk());
 	}
 
 	@Test
+	@Order(8)
 	void badDeleteComment() throws Exception {
 		assertThrows(Exception.class, () -> {
-			mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/1235"))
+			mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/1235")
+						.header("Authorization", "Bearer " + authenticate(randomName, password)))
 					.andExpect(status().isNotFound());
 		});
 	}
 
 	@Test
-	@Order(7)
+	@Order(9)
 	void getUserById() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
 				.andExpect(status().isOk())
@@ -219,6 +227,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
+	@Order(10)
 	void badGetUserById() throws Exception {
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(MockMvcRequestBuilders.get("/api/users/1235"))
@@ -227,7 +236,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(11)
 	void getUsers() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
 				.andExpect(status().isOk())
@@ -257,13 +266,14 @@ class ProtubeBackApplicationTests {
 	}*/
 
 	@Test
-	@Order(9)
+	@Order(12)
 	void deleteUser() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
 				.andExpect(status().isOk());
 	}
 
 	@Test
+	@Order(13)
 	void badDeleteUser() throws Exception {
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))
