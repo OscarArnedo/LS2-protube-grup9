@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type {VideoMetaDataDTO, VideosDTO} from '../types/videoInterfaces'
+import {getCookie} from "../utils/cookies.ts";
 
 export const fetchVideos = async (): Promise<VideosDTO[]> => {
   try {
@@ -39,11 +40,49 @@ const fetchMedia = async (fileName: string, fileType:string): Promise<string> =>
 }
 
 export const updateComment = async (commentId: number, commentText: string) => {
-  const response = await axios.put(`http://localhost:8080/api/comments/${commentId}`, { comment_text: commentText });
-  return response.data;
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.patch(
+        `http://localhost:8080/api/comments/${commentId}/text`,
+        { text: commentText },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
 };
 
 export const deleteComment = async (commentId: number) => {
-  const response = await axios.delete(`http://localhost:8080/api/comments/${commentId}`);
-  return response.data;
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
 };
+export const createComment = async (videoId: number, text: string) => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.post(
+        `http://localhost:8080/api/comments`,
+        {
+            "videoId": videoId,
+            "comment_text": text},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}

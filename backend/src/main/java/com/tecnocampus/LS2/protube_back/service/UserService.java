@@ -66,4 +66,8 @@ public class UserService {
 
         userRepository.delete(user);
     }
+
+    public UserDTO getUserDetails(String name) {
+        return new UserDTO(userRepository.findByName(name).orElseThrow(()->new EntityNotFound(User.class, "name", name)));
+    }
 }

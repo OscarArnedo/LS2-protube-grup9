@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -34,6 +35,12 @@ public class UserController {
     @GetMapping()
     public List<UserDTO> getUsers() {
         return userService.getUsers();
+    }
+
+    @Operation(summary = "Get user by principal")
+    @GetMapping("/userDetails")
+    public UserDTO getUserDetails(Principal principal) {
+        return userService.getUserDetails(principal.getName());
     }
 
     @Operation(summary = "Update a user given an id and a userDTO")
