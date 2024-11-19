@@ -195,6 +195,22 @@ class ProtubeBackApplicationTests {
 
 	@Test
 	@Order(7)
+	void getCommentsByAuthorId() throws Exception {
+		String token = authenticate(randomName, password);
+		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/comments/author")
+						.header("Authorization", "Bearer " + token)
+						.principal(() -> randomName))
+				.andExpect(status().isOk())
+				.andReturn();
+		String content = result.getResponse().getContentAsString();
+		List<CommentDTO> comments = objectMapper.readValue(content, new TypeReference<List<CommentDTO>>() {
+		});
+
+		assertEquals(createdCommentId, comments.stream().filter(comment -> comment.getId().equals(createdCommentId)).findFirst().get().getId());
+	}
+
+	@Test
+	@Order(8)
 	void deleteComment() throws Exception {
 		String token = authenticate(randomName, password);
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/" + createdCommentId)
@@ -204,7 +220,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	void badDeleteComment() throws Exception {
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(MockMvcRequestBuilders.delete("/api/comments/1235")
@@ -214,7 +230,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(9)
+	@Order(10)
 	void getUserById() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users/"+createdUserId))
 				.andExpect(status().isOk())
@@ -227,7 +243,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(10)
+	@Order(11)
 	void badGetUserById() throws Exception {
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(MockMvcRequestBuilders.get("/api/users/1235"))
@@ -236,7 +252,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(11)
+	@Order(12)
 	void getUsers() throws Exception {
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/users"))
 				.andExpect(status().isOk())
@@ -266,14 +282,14 @@ class ProtubeBackApplicationTests {
 	}*/
 
 	@Test
-	@Order(12)
+	@Order(13)
 	void deleteUser() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
 				.andExpect(status().isOk());
 	}
 
 	@Test
-	@Order(13)
+	@Order(14)
 	void badDeleteUser() throws Exception {
 		assertThrows(Exception.class, () -> {
 			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))

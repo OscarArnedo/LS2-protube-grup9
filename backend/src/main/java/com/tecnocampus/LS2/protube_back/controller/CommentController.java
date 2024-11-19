@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -35,7 +36,12 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    public void deleteComment(@PathVariable Long commentId,Principal principal) throws Exception {
+    public void deleteComment(@PathVariable Long commentId, Principal principal) throws Exception {
         commentService.deleteComment(commentId, principal.getName());
+    }
+
+    @GetMapping("/author")
+    public List<CommentDTO> getCommentsByAuthorId(Principal principal) throws Exception {
+        return commentService.getCommentsByAuthorId(principal.getName());
     }
 }

@@ -10,6 +10,8 @@ import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
@@ -49,4 +51,11 @@ public class CommentService {
         }
         commentRepository.delete(comment);
     }
+
+    public List<CommentDTO> getCommentsByAuthorId(String username) throws Exception {
+        User author = userRepository.findByName(username).orElseThrow(() -> new EntityNotFound(User.class, "name", username));
+        List<Comment> comments = commentRepository.getCommentsByAuthorId(author.getId());
+        return comments.stream().map(CommentDTO::new).toList();
+    }
+
 }
