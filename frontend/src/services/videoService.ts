@@ -1,10 +1,11 @@
 import axios from 'axios'
 import type {VideoMetaDataDTO, VideosDTO} from '../types/videoInterfaces'
 import {getCookie} from "../utils/cookies.ts";
+import { getEnv } from '../utils/Env.ts';
 
 export const fetchVideos = async (): Promise<VideosDTO[]> => {
   try {
-    const response = await axios.get('http://localhost:8080/api/videos');
+    const response = await axios.get(getEnv().API_BASE_URL+'/videos');
     return response.data;
   } catch (error) {
     console.error('Error fetching videos', error);
@@ -14,7 +15,7 @@ export const fetchVideos = async (): Promise<VideosDTO[]> => {
 
 export const fetchVideoById = async (id: number): Promise<VideoMetaDataDTO> => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/videos/${id}`);
+    const response = await axios.get(getEnv().API_BASE_URL+`/videos/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching video', error);
@@ -28,7 +29,7 @@ export const fetchVideoMedia = async (fileName: string): Promise<string> => awai
 
 const fetchMedia = async (fileName: string, fileType:string): Promise<string> => {
     try {
-        const response = await axios.get(`http://localhost:8080/media/${fileName}`, {
+        const response = await axios.get(getEnv().MEDIA_BASE_URL+`/${fileName}`, {
             responseType: 'blob'
         });
         const imageBlob = new Blob([response.data], { type: fileType });
@@ -45,7 +46,7 @@ export const updateComment = async (commentId: number, commentText: string) => {
         throw new Error('No auth token found');
     }
     const response = await axios.patch(
-        `http://localhost:8080/api/comments/${commentId}/text`,
+        getEnv().API_BASE_URL+`/comments/${commentId}/text`,
         { text: commentText },
         {
             headers: {
@@ -61,7 +62,7 @@ export const deleteComment = async (commentId: number) => {
     if (!token) {
         throw new Error('No auth token found');
     }
-    const response = await axios.delete(`http://localhost:8080/api/comments/${commentId}`, {
+    const response = await axios.delete(getEnv().API_BASE_URL+`/comments/${commentId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -74,7 +75,7 @@ export const createComment = async (videoId: number, text: string) => {
         throw new Error('No auth token found');
     }
     const response = await axios.post(
-        `http://localhost:8080/api/comments`,
+        getEnv().API_BASE_URL+'/comments',
         {
             "videoId": videoId,
             "comment_text": text},

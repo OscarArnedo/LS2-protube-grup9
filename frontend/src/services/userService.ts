@@ -1,10 +1,11 @@
 import axios from 'axios'
 import type {LoginResponse, UserDTO} from '../types/userInterfaces'
 import {getCookie} from "../utils/cookies";
+import { getEnv } from '../utils/Env.ts';
 
   export const login = async (username: string, password: string): Promise<LoginResponse> => {
     try {
-        const response = await axios.post<LoginResponse>('http://localhost:8080/authenticate', {
+        const response = await axios.post<LoginResponse>(getEnv().BASE_URL+'/authenticate', {
             username,
             password,
         });
@@ -17,7 +18,7 @@ import {getCookie} from "../utils/cookies";
 
 export const register = async (name: string, email: string, password: string): Promise<UserDTO> => {
     try {
-        const response = await axios.post<UserDTO>('http://localhost:8080/api/users/create', {
+        const response = await axios.post<UserDTO>(getEnv().API_BASE_URL+'/users/create', {
             name,
             email,
             password,
@@ -35,7 +36,7 @@ export const getUserDetails = async () => {
         throw new Error('No auth token found');
     }
     try {
-        const response = await axios.get<UserDTO>('http://localhost:8080/api/users/userDetails',
+        const response = await axios.get<UserDTO>(getEnv().API_BASE_URL+'/users/userDetails',
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
