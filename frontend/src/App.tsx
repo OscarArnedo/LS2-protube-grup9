@@ -76,8 +76,15 @@ function App() {
     const handleSearch = () => {
         console.log("Buscar:", searchQuery);
     };
+    
     const handleProfile = () => {
+        setDropdownOpen(false);
         navigate('/profile');
+    };
+
+    const handleHome = () => {
+        setDropdownOpen(false);
+        navigate('/');
     };
 
     const toggleDropdown = () => {
@@ -136,12 +143,21 @@ function App() {
                                 </div>
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                        <button
-                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                            onClick={handleProfile}
-                                        >
-                                            Profile
-                                        </button>
+                                        {location.pathname === '/profile' ? (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                onClick={handleHome}
+                                            >
+                                                Home
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                onClick={handleProfile}
+                                            >
+                                                Profile
+                                            </button>
+                                        )}
                                         <button
                                             className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                             onClick={handleLogout}

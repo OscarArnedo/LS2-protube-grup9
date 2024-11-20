@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {VideoMetaDataDTO, Like} from '../types/videoInterfaces';
 import {fetchVideoById, fetchVideoMedia, updateComment, deleteComment, createComment} from '../services/videoService';
-import avatar from '../assets/avatar.png';
 import like from '../assets/like.png';
 import dislike from '../assets/dislike.png';
 import {useUser} from '../contexts/UserContext';
