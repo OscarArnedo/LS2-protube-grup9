@@ -71,7 +71,7 @@ public class VideoService {
 
     public List<VideoDTO> getVideosByAuthor(String name) throws Exception {
         User author = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
-        List<Video> videos = videoRepository.getVideosByOwnerId(author.getId());
+        List<Video> videos = videoRepository.getVideosByOwner(author);
         return videos.stream().map(VideoDTO::new).collect(Collectors.toList());
     }
 }
