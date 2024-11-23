@@ -50,30 +50,27 @@ const HomeVideos: React.FC = () => {
           {isLoading ? (
               <LoadingComponent />
           ) : (
-              <>
-                  <header className="App-header m-10">
-                      <h1 className="text-3xl font-bold my-4">Welcome to ProTube</h1>
-                  </header>
-                  <div className="flex flex-wrap justify-center">
-                      {videos.map((video) => (
-                          <VideoCard
-                              key={video.id}
-                              id={video.id}
-                              title={video.title}
-                              owner={video.owner}
-                              imagePath={imageUrls[video.id]}
-                          />
-                      ))}
-                  </div>
-                  {isVisible && (
-                      <button 
-                          onClick={scrollToTop} 
-                          className="fixed bottom-4 right-4 bg-black text-white rounded-full h-12 w-12 flex items-center justify-center hover:bg-gray-800 transition duration-300"
-                      >
-                          ↑
-                      </button>
-                  )}
-              </>
+            <>
+                <div className="flex flex-wrap justify-center">
+                    {videos.map((video) => (
+                        <VideoCard
+                            key={video.id}
+                            id={video.id}
+                            title={video.title}
+                            owner={video.owner}
+                            imagePath={imageUrls[video.id]}
+                        />
+                    ))}
+                </div>
+                {isVisible && (
+                    <button 
+                        onClick={scrollToTop} 
+                        className="fixed bottom-4 right-4 bg-black text-white rounded-full h-12 w-12 flex items-center justify-center hover:bg-gray-800 transition duration-300"
+                    >
+                        ↑
+                    </button>
+                )}
+            </>
           )}
       </div>
   );

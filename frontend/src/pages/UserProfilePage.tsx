@@ -50,16 +50,15 @@ const UserProfilePage: React.FC = () => {
     // Añade más videos según sea necesario
   ];
 
-
   return (
     <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10">
       {/* Información del usuario */}
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
         <div className="flex items-center">
-          <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-200 text-gray-700 text-3xl font-bold">
+          <div className="w-24 h-24 rounded-full flex items-center justify-center bg-orange-500 text-gray-700 text-3xl font-bold">
             {currentUser?.name.charAt(0).toUpperCase()}
           </div>
-          <div className="ml-6">
+          <div className="ml-6 flex flex-col text-left">
             <h1 className="text-2xl font-bold text-gray-800">{currentUser?.name}</h1>
             <p className="text-gray-600">{currentUser?.email}</p>
           </div>

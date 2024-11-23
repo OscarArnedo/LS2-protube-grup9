@@ -2,6 +2,7 @@ import './App.css';
 import logo from './assets/logoProtube.png';
 import search from './assets/searchIcon.png';
 import loginIcon from './assets/loginIcon.png';
+import logoutIcon from './assets/logoutIcon.png';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
@@ -38,6 +39,7 @@ function App() {
             console.log('Login successful:', response);
             setIsAuthenticated(true);
             setUserName(username);
+            localStorage.setItem('userName', username);
             setCookie('authToken', response.access_token, 7);
             await fetchCurrentUser();
             setModalOpen(false);
@@ -46,7 +48,7 @@ function App() {
         } catch (error) {
             console.error('Login failed:', error);
             toast.error('Login failed. Please check your credentials');
-            throw error; // Re-throw the error to maintain the Promise<string> signature
+            throw error;
         }
     };
 
@@ -63,9 +65,9 @@ function App() {
 
     const handleLogout = async () => {
         setIsAuthenticated(false);
-        setUserName('');// Limpia el nombre del usuario al cerrar sesión
+        setUserName('');
         localStorage.removeItem('userName');
-        deleteCookie('authToken'); // Remove token from cookies
+        deleteCookie('authToken');
         await fetchCurrentUser();
         navigate('/');
     };
@@ -154,10 +156,11 @@ function App() {
                                             </button>
                                         )}
                                         <button
-                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                                             onClick={handleLogout}
                                         >
-                                            Logout
+                                            <span>Logout</span>
+                                            <img src={logoutIcon} alt="Logout" className="h-6 w-6" />
                                         </button>
                                     </div>
                                 )}
