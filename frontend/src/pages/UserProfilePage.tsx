@@ -1,11 +1,29 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import VideoCard from "../components/VideoCard";
-import Modal from '../components/Modal'; // Asegúrate de ajustar la ruta de importación según tu estructura de proyecto
+import Modal from '../components/Modal';
+import {CommentDTO} from "../types/videoInterfaces.tsx";
+import {getCommentsByAuthor} from "../services/videoService.ts";
+import {useUser} from "../contexts/UserContext.tsx"; // Asegúrate de ajustar la ruta de importación según tu estructura de proyecto
 
 const UserProfilePage: React.FC = () => {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
   const [videoTitle, setVideoTitle] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [comments, setComments] = useState<CommentDTO[]>([]);
+  const {currentUser} = useUser();
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const commentsData = await getCommentsByAuthor();
+        setComments(commentsData);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    };
+
+    fetchComments().then(r => console.log('Comments fetched:', r));
+  }, []);
 
   const handleUploadVideo = () => {
     setUploadModalOpen(true);
@@ -32,8 +50,6 @@ const UserProfilePage: React.FC = () => {
     // Añade más videos según sea necesario
   ];
 
-  const userName = "Jane Doe";
-  const userInitial = userName.charAt(0);
 
   return (
     <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10">
@@ -41,12 +57,11 @@ const UserProfilePage: React.FC = () => {
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
         <div className="flex items-center">
           <div className="w-24 h-24 rounded-full border-2 border-gray-300 flex items-center justify-center bg-gray-200 text-gray-700 text-3xl font-bold">
-            {userInitial}
+            {currentUser?.name.charAt(0).toUpperCase()}
           </div>
           <div className="ml-6">
-            <h1 className="text-2xl font-bold text-gray-800">{userName}</h1>
-            <p className="text-gray-600">jane.doe@example.com</p>
-            <p className="text-gray-700 mt-2">Creadora de contenido y amante de la tecnología.</p>
+            <h1 className="text-2xl font-bold text-gray-800">{currentUser?.name}</h1>
+            <p className="text-gray-600">{currentUser?.email}</p>
           </div>
         </div>
       </div>
@@ -63,7 +78,7 @@ const UserProfilePage: React.FC = () => {
 
       {/* Sección de videos */}
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Mis Videos</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">My Videos</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {userVideos.map(video => (
             <VideoCard key={video.id} {...video} />
@@ -73,20 +88,13 @@ const UserProfilePage: React.FC = () => {
 
       {/* Sección de comentarios */}
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Mis Comentarios</h2>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">My Comments</h2>
         {/* Tarjeta de comentario */}
-        <div className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
-          <p className="text-gray-600 text-sm">
-            ¡Gran video! Me encantó.
-          </p>
-          <p className="text-gray-500 text-xs mt-2">En: Tutorial de React</p>
-        </div>
-        <div className="bg-gray-100 rounded-lg p-4 shadow">
-          <p className="text-gray-600 text-sm">
-            Muy útil, gracias por compartir.
-          </p>
-          <p className="text-gray-500 text-xs mt-2">En: Mi primer video</p>
-        </div>
+        {comments.map((comment, index) => (
+            <div key={index} className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
+              <p className="text-gray-600 text-sm text-left">{comment.comment_text}</p>
+            </div>
+        ))}
       </div>
 
       {/* Modal para subir videos */}

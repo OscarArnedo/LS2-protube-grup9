@@ -82,7 +82,6 @@ const VideoPage: React.FC = () => {
             console.error('Error updating comment', error);
         }
     };
-
     const handleDelete = async (commentId: number) => {
         try {
             await deleteComment(commentId);
@@ -132,8 +131,7 @@ const VideoPage: React.FC = () => {
                 <h1 className="text-2xl font-bold mb-2">{video.title}</h1>
                 <div className="flex items-center mb-4 h-full">
                     <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold"
-                        style={{ backgroundColor: `#${Math.floor(Math.random() * 16777215).toString(16)}` }}
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold bg-orange-500"
                     >
                         {video.owner.name.charAt(0).toUpperCase()}
                     </div>
@@ -175,14 +173,12 @@ const VideoPage: React.FC = () => {
                     )}
                 </div>
                 {video.comments.map((comment) => {
-                    const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
                     const userInitial = comment.author.name.charAt(0).toUpperCase();
                     return (
                         <div key={comment.id} className="flex mb-4 bg-white p-4 rounded-lg shadow">
                             <div className="mr-4">
                                 <div
-                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold"
-                                    style={{ backgroundColor: randomColor }}
+                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold bg-orange-500"
                                 >
                                     {userInitial}
                                 </div>

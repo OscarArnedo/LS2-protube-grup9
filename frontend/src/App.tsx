@@ -22,8 +22,7 @@ function App() {
     const [searchQuery, setSearchQuery] = useState("");
     const { fetchCurrentUser } = useUser();
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [avatarColor, setAvatarColor] = useState('');
+    const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
     useEffect(() => {
         const token = getCookie('authToken');
@@ -31,9 +30,6 @@ function App() {
         if (token) {
             setIsAuthenticated(true);
         }
-        // Genera un color de fondo aleatorio
-        const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-        setAvatarColor(randomColor);
     }, []);
 
     const handleLogin = async (username: string, password: string): Promise<string> => {
@@ -68,6 +64,7 @@ function App() {
     const handleLogout = async () => {
         setIsAuthenticated(false);
         setUserName('');// Limpia el nombre del usuario al cerrar sesión
+        localStorage.removeItem('userName');
         deleteCookie('authToken'); // Remove token from cookies
         await fetchCurrentUser();
         navigate('/');
@@ -91,7 +88,6 @@ function App() {
         setDropdownOpen(!isDropdownOpen);
     };
 
-    const userInitial = userName.charAt(0).toUpperCase();
     /*ALGO ASI LEER PARA EL BUSCADOR
     const [articles, setArticles] = useState([
       { id: 1, title: "Primer artículo" },
@@ -135,11 +131,10 @@ function App() {
                         isAuthenticated ? (
                             <div className="relative">
                                 <div
-                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer"
-                                    style={{ backgroundColor: avatarColor }}
+                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer bg-orange-500"
                                     onClick={toggleDropdown}
                                 >
-                                    {userInitial}
+                                    {userName.charAt(0).toUpperCase()}
                                 </div>
                                 {isDropdownOpen && (
                                     <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
