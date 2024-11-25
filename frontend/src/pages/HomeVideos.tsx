@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/VideoCard.tsx';
 import { VideosDTO } from '../types/videoInterfaces.tsx';
-import {fetchImageMedia, fetchVideos} from '../services/videoService';
+import {fetchVideos} from '../services/videoService';
 import useScrollToTop from '../hooks/scrollToTop.tsx';
 import LoadingComponent from '../components/Loading.tsx';
+import { getImagesForVideos } from '../utils/functions.ts';
 
 const HomeVideos: React.FC = () => {
     const [videos, setVideos] = useState<VideosDTO[]>([]);
@@ -16,7 +17,9 @@ const HomeVideos: React.FC = () => {
             const videosData: VideosDTO[] = await fetchVideos();
             console.log('Videos fetched:', videosData);
             setVideos(videosData);
-            await getImages(videosData);
+            
+            const imagesUrlsMap = await getImagesForVideos(videosData);
+            setImageUrls(imagesUrlsMap);
 
             await new Promise(resolve => setTimeout(resolve, 400));
             setIsLoading(false);
@@ -25,22 +28,7 @@ const HomeVideos: React.FC = () => {
             setIsLoading(false);
         }
     };
-    const getImages = async (videos: VideosDTO[]) => {
-        try {
-            const imagePromises = videos.map(async (video) => {
-                const imageUrl = await fetchImageMedia(video.imagePath);
-                return { id: video.id, url: imageUrl };
-            });
-            const imagesData = await Promise.all(imagePromises);
-            const imageUrlsMap = imagesData.reduce((acc, { id, url }) => {
-                acc[id] = url;
-                return acc;
-            }, {} as { [key: number]: string });
-            setImageUrls(imageUrlsMap);
-        } catch (error) {
-            console.error('Error fetching images');
-        }
-    };
+   
     useEffect(() => {
         getVideos();
     }, []);

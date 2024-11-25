@@ -102,8 +102,8 @@ export const getCommentsByAuthor = async () => {
     );
     return response.data;
 };
-//TODO: Revisar
-/*export const getVideosByAuthor = async () => {
+
+export const getVideosByAuthor = async () => {
     const token = getCookie('authToken');
     if (!token) {
         throw new Error('No auth token found');
@@ -117,4 +117,4 @@ export const getCommentsByAuthor = async () => {
         }
     );
     return response.data;
-}*/
+}
