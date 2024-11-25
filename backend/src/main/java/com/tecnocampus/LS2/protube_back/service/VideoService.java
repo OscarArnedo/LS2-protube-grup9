@@ -5,10 +5,12 @@ import com.tecnocampus.LS2.protube_back.persistance.*;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
+import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,18 +40,18 @@ public class VideoService {
         }).collect(Collectors.toList());
     }
 
-    public VideoDTO updateVideo(Long id, String name, VideoMetaDataDTO videoMetaDataDTO) {
+    public VideoUpdateDTO updateVideo(Long id, String name, VideoUpdateDTO videoMetaDataDTO) {
         User user = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
-        Video video = videoRepository.findById(id).orElseThrow(()->new EntityNotFound(Video.class, "id", id));
-        if(!video.getOwner().getName().equals(user.getName())){
-            throw new RuntimeException("You are not the owner of the video!!!");
+        Video video = videoRepository.findById(id).orElseThrow(() -> new EntityNotFound(Video.class, "id", id));
+        Meta meta = metaRepository.getMetaByVideoId(id);
+        if(!Objects.equals(user.getName(), video.getOwner().getName())){
+            throw new RuntimeException("You are not the owner of the video!");
         }
-        video.setDuration(videoMetaDataDTO.getDuration());
-        video.setHeight(videoMetaDataDTO.getHeight());
-        video.setWidth(videoMetaDataDTO.getWidth());
+        meta.setDescription(videoMetaDataDTO.getDescription());
+        metaRepository.save(meta);
         video.setTitle(videoMetaDataDTO.getTitle());
-
-        return new VideoDTO(videoRepository.save(video));
+        videoRepository.save(video);
+        return new VideoUpdateDTO(video, meta);
     }
 
     public VideoMetaDataDTO getVideoMeta(Long id) {
