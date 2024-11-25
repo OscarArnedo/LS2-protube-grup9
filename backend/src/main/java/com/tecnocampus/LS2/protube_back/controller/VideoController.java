@@ -44,4 +44,10 @@ public class VideoController {
         return videoService.updateVideo(id,principal.getName(), videoMetaDataDTO);
     }
 
+    @Operation(summary = "Get Videos by author")
+    @GetMapping("/author")
+    public List<VideoDTO> getVideosByAuthor(Principal principal) throws Exception {
+        return videoService.getVideosByAuthor(principal.getName());
+    }
+
 }
