@@ -93,7 +93,7 @@ const UserProfilePage: React.FC = () => {
               <p className="text-gray-600 text-sm text-center">No videos yet</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-1 justify-items-center">
               {videos.map(video => (
                 <VideoCard key={video.id} {...video} imagePath={imageUrls[video.id]}/>
               ))}
