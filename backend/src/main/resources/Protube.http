@@ -34,12 +34,8 @@ Authorization: {{auth_token}}
 content-type: application/json
 
 {
-  "id": 0,
-  "width": 1920,
-  "height": 1080,
-  "duration": 24,
-  "title": "Bruno Mars - 24K Magic (Official Music Video)",
-  "username": "Bruno Martes"
+  "title": "Bruno Mars - 24K Magic",
+  "description": "Test funciona bien!"
 }
 
 ###
@@ -77,6 +73,8 @@ Authorization: {{auth_token}}
 GET http://localhost:8080/api/videos/author
 Authorization: {{auth_token}}
 
+
 ###
 DELETE localhost:8080/api/videos/0
 Authorization: {{auth_token}}
+
