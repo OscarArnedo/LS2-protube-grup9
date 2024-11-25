@@ -86,4 +86,35 @@ export const createComment = async (videoId: number, text: string) => {
         }
     );
     return response.data;
+};
+export const getCommentsByAuthor = async () => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.get(
+        getEnv().API_BASE_URL+`/comments/author`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+};
+
+export const getVideosByAuthor = async () => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.get(
+        getEnv().API_BASE_URL+`/videos/author`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
 }

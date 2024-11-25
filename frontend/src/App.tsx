@@ -2,6 +2,7 @@ import './App.css';
 import logo from './assets/logoProtube.png';
 import search from './assets/searchIcon.png';
 import loginIcon from './assets/loginIcon.png';
+import logoutIcon from './assets/logoutIcon.png';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
@@ -21,6 +22,8 @@ function App() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState("");
     const { fetchCurrentUser } = useUser();
+    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
 
     useEffect(() => {
         const token = getCookie('authToken');
@@ -35,6 +38,8 @@ function App() {
             const response = await login(username, password);
             console.log('Login successful:', response);
             setIsAuthenticated(true);
+            setUserName(username);
+            localStorage.setItem('userName', username);
             setCookie('authToken', response.access_token, 7);
             await fetchCurrentUser();
             setModalOpen(false);
@@ -43,7 +48,7 @@ function App() {
         } catch (error) {
             console.error('Login failed:', error);
             toast.error('Login failed. Please check your credentials');
-            throw error; // Re-throw the error to maintain the Promise<string> signature
+            throw error;
         }
     };
 
@@ -60,7 +65,9 @@ function App() {
 
     const handleLogout = async () => {
         setIsAuthenticated(false);
-        deleteCookie('authToken'); // Remove token from cookies
+        setUserName('');
+        localStorage.removeItem('userName');
+        deleteCookie('authToken');
         await fetchCurrentUser();
         navigate('/');
     };
@@ -69,6 +76,20 @@ function App() {
         console.log("Buscar:", searchQuery);
     };
     
+    const handleProfile = () => {
+        setDropdownOpen(false);
+        navigate('/profile');
+    };
+
+    const handleHome = () => {
+        setDropdownOpen(false);
+        navigate('/');
+    };
+
+    const toggleDropdown = () => {
+        setDropdownOpen(!isDropdownOpen);
+    };
+
     /*ALGO ASI LEER PARA EL BUSCADOR
     const [articles, setArticles] = useState([
       { id: 1, title: "Primer artículo" },
@@ -101,23 +122,54 @@ function App() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="p-1 rounded bg-gray-200 text-black"
                     />
-                    <button
-                        onClick={handleSearch}
-                    >
+                    <button onClick={handleSearch}>
                         <img src={search} alt="Search" className="h-6 w-6" />
                     </button>
                 </div>
 
                 {/* Botón de Login/Logout */}
-                <nav>
+                <nav className="relative">
                     {location.pathname !== '/login' && location.pathname !== '/register' && (
                         isAuthenticated ? (
-                            <button className="text-white py-1 px-4 rounded hover:bg-gray-900 transition duration-300" onClick={handleLogout}>
-                                Logout
-                            </button>
+                            <div className="relative">
+                                <div
+                                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer bg-orange-500"
+                                    onClick={toggleDropdown}
+                                >
+                                    {userName.charAt(0).toUpperCase()}
+                                </div>
+                                {isDropdownOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg">
+                                        {location.pathname === '/profile' ? (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                onClick={handleHome}
+                                            >
+                                                Home
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                                onClick={handleProfile}
+                                            >
+                                                Profile
+                                            </button>
+                                        )}
+                                        <button
+                                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                            onClick={handleLogout}
+                                        >
+                                            <span>Logout</span>
+                                            <img src={logoutIcon} alt="Logout" className="h-6 w-6" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         ) : (
                             <button
-                                className="text-white py-1 px-4 rounded hover:bg-gray-900 transition duration-300 flex items-center gap-2" onClick={() => setModalOpen(true)}>
+                                className="text-white py-1 px-4 rounded hover:bg-gray-900 transition duration-300 flex items-center gap-2"
+                                onClick={() => setModalOpen(true)}
+                            >
                                 Login
                                 <img src={loginIcon} alt="Login" className="h-6 w-6" />
                             </button>
