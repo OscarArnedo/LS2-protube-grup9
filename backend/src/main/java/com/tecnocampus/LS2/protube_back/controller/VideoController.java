@@ -50,4 +50,9 @@ public class VideoController {
         return videoService.getVideosByAuthor(principal.getName());
     }
 
+    @Operation(summary = "Delete a video given an id")
+    @DeleteMapping("/{id}")
+    public void deleteVideo(@PathVariable Long id, Principal principal) {
+        videoService.deleteVideo(id, principal.getName());
+    }
 }
