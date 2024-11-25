@@ -6,8 +6,13 @@ import useScrollToTop from '../hooks/scrollToTop.tsx';
 import LoadingComponent from '../components/Loading.tsx';
 import { getImagesForVideos } from '../utils/functions.ts';
 
-const HomeVideos: React.FC = () => {
+interface HomeVideosProps {
+    searchQuery: string;
+}
+
+const HomeVideos: React.FC<HomeVideosProps> = ( {searchQuery} ) => {
     const [videos, setVideos] = useState<VideosDTO[]>([]);
+    const [filteredVideos, setFilteredVideos] = useState<VideosDTO[]>([]);
     const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
     const { isVisible, scrollToTop } = useScrollToTop();
     const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +22,7 @@ const HomeVideos: React.FC = () => {
             const videosData: VideosDTO[] = await fetchVideos();
             console.log('Videos fetched:', videosData);
             setVideos(videosData);
+            setFilteredVideos(videosData);
             
             const imagesUrlsMap = await getImagesForVideos(videosData);
             setImageUrls(imagesUrlsMap);
@@ -33,6 +39,23 @@ const HomeVideos: React.FC = () => {
         getVideos();
     }, []);
 
+    useEffect(() => {
+        const handelSearch = () => { 
+            if (searchQuery.trim() === '') {
+            setFilteredVideos(videos);
+            } else {
+                setFilteredVideos(
+                    videos.filter(
+                        video =>
+                            video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            video.owner.toLowerCase().includes(searchQuery.toLowerCase())
+                    )
+                );
+            }
+        };
+        handelSearch();
+    }, [searchQuery, videos]);
+    
     return (
       <div>
           {isLoading ? (
@@ -40,7 +63,7 @@ const HomeVideos: React.FC = () => {
           ) : (
             <>
                 <div className="flex flex-wrap justify-center">
-                    {videos.map((video) => (
+                    {filteredVideos.map((video) => (
                         <VideoCard
                             key={video.id}
                             id={video.id}

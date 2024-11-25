@@ -1,6 +1,5 @@
 import './App.css';
 import logo from './assets/logoProtube.png';
-import search from './assets/searchIcon.png';
 import loginIcon from './assets/loginIcon.png';
 import logoutIcon from './assets/logoutIcon.png';
 import { useEffect, useState } from 'react';
@@ -72,10 +71,6 @@ function App() {
         navigate('/');
     };
 
-    const handleSearch = () => {
-        console.log("Buscar:", searchQuery);
-    };
-    
     const handleProfile = () => {
         setDropdownOpen(false);
         navigate('/profile');
@@ -89,17 +84,6 @@ function App() {
     const toggleDropdown = () => {
         setDropdownOpen(!isDropdownOpen);
     };
-
-    /*ALGO ASI LEER PARA EL BUSCADOR
-    const [articles, setArticles] = useState([
-      { id: 1, title: "Primer artículo" },
-      { id: 2, title: "Segundo artículo" },
-      { id: 3, title: "Tercer artículo" },
-    ]);
-  
-    const filteredArticles = articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );*/
 
     return (
         <div className="App">
@@ -120,11 +104,8 @@ function App() {
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="p-1 rounded bg-gray-200 text-black"
+                        className="p-1 rounded bg-gray-200 text-black w-96 max-w-lg"
                     />
-                    <button onClick={handleSearch}>
-                        <img src={search} alt="Search" className="h-6 w-6" />
-                    </button>
                 </div>
 
                 {/* Botón de Login/Logout */}
@@ -187,7 +168,8 @@ function App() {
                     )}
                 </Modal>
 
-                <AppRoutes />
+                <AppRoutes searchQuery={searchQuery}/>
+
             </main>
         </div>
     );
