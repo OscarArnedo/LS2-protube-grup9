@@ -12,7 +12,7 @@ POST http://localhost:8080/authenticate
 content-type: application/json
 
 {
-  "username": "kurzgesagt",
+  "username": "Bruno Mars",
   "password": "password123"
 }
 > {%
@@ -71,4 +71,8 @@ content-type: application/json
 
 ###
 GET http://localhost:8080/api/users/userDetails
+Authorization: {{auth_token}}
+
+###
+GET http://localhost:8080/api/videos/author
 Authorization: {{auth_token}}
