@@ -1,6 +1,8 @@
 package com.tecnocampus.LS2.protube_back.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tecnocampus.LS2.protube_back.service.VideoService;
+import com.tecnocampus.LS2.protube_back.service.dto.NewVideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
@@ -48,6 +51,27 @@ public class VideoController {
     @GetMapping("/author")
     public List<VideoDTO> getVideosByAuthor(Principal principal) throws Exception {
         return videoService.getVideosByAuthor(principal.getName());
+    }
+
+    @Operation(summary = "Create a Video")
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<String> createVideo(
+            Principal principal,
+            @RequestPart("newVideoDTO") String newVideoDTO,  // Recibir como String
+            @RequestPart("videoFile") MultipartFile videoFile,
+            @RequestPart("imageFile") MultipartFile imageFile
+    ) {
+        try {
+            // Convertir el JSON recibido como String en el DTO esperado
+            ObjectMapper objectMapper = new ObjectMapper();
+            NewVideoDTO parsedNewVideoDTO = objectMapper.readValue(newVideoDTO, NewVideoDTO.class);
+
+            videoService.createVideo(principal.getName(), parsedNewVideoDTO, videoFile, imageFile);
+        } catch (Exception e) {
+            logger.error("Error creating video: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        return ResponseEntity.ok("Video created successfully");
     }
 
 }
