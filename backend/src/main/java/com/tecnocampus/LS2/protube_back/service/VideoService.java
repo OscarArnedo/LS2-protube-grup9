@@ -8,6 +8,7 @@ import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -75,5 +76,37 @@ public class VideoService {
         User author = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
         List<Video> videos = videoRepository.getVideosByOwner(author);
         return videos.stream().map(VideoDTO::new).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteVideo(Long id, String name) {
+        User user = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
+        Video video = videoRepository.findById(id).orElseThrow(() -> new EntityNotFound(Video.class, "id", id));
+        if (!video.getOwner().getName().equals(user.getName())) {
+            throw new RuntimeException("You are not the owner of the video!!!");
+        }
+
+        // Delete comments associated with the video
+        List<Comment> comments = commentRepository.getCommentsByVideoIdOrderByIdDesc(id);
+        commentRepository.deleteAll(comments);
+
+        // Delete tags associated with the video
+        List<Tag> tags = tagRepository.getTagsByVideoId(id);
+        tagRepository.deleteAll(tags);
+
+        // Delete meta associated with the video
+        Meta meta = metaRepository.getMetaByVideoId(id);
+        if (meta != null) {
+            metaRepository.delete(meta);
+        }
+
+        // Delete category associated with the video
+        Category category = categoryRepository.getCategoryByVideoId(id);
+        if (category != null) {
+            categoryRepository.delete(category);
+        }
+
+        // Delete the video
+        videoRepository.delete(video);
     }
 }
