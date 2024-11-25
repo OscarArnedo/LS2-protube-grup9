@@ -57,12 +57,11 @@ public class VideoController {
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<String> createVideo(
             Principal principal,
-            @RequestPart("newVideoDTO") String newVideoDTO,  // Recibir como String
+            @RequestPart("newVideoDTO") String newVideoDTO,
             @RequestPart("videoFile") MultipartFile videoFile,
             @RequestPart("imageFile") MultipartFile imageFile
     ) {
         try {
-            // Convertir el JSON recibido como String en el DTO esperado
             ObjectMapper objectMapper = new ObjectMapper();
             NewVideoDTO parsedNewVideoDTO = objectMapper.readValue(newVideoDTO, NewVideoDTO.class);
 
