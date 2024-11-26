@@ -97,6 +97,7 @@ const UserProfilePage: React.FC = () => {
               {videos.map(video => (
                 <VideoCard key={video.id} {...video} imagePath={imageUrls[video.id]}/>
               ))}
+              
             </div>
           )}
       </div>
