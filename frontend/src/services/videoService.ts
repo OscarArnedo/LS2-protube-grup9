@@ -118,3 +118,35 @@ export const getVideosByAuthor = async () => {
     );
     return response.data;
 }
+
+export const updateVideo = async (videoId: number, title: string, description: string) => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.put(
+        getEnv().API_BASE_URL+`/videos/${videoId}`,
+        {
+            "title": title,
+            "description": description},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
+export const deleteVideo = async (videoId: number) => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.delete(getEnv().API_BASE_URL+`/videos/${videoId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
