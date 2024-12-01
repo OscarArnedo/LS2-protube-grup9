@@ -25,7 +25,8 @@ const UserProfilePage: React.FC = () => {
     const fetchData = async () => {
       try {
         const commentsData = await getCommentsByAuthor();
-        setComments(commentsData);
+        const enrichedComments = await enrichCommentsWithVideoData(commentsData);
+        setComments(enrichedComments);
 
         const videosData = await getVideosByAuthor();
         setVideos(videosData);
@@ -114,6 +115,28 @@ const UserProfilePage: React.FC = () => {
     setEditModalOpen(false);
     setCurrentVideoId(null);
   };
+
+  const enrichCommentsWithVideoData = async (comments: CommentDTO[]) => {
+    const enrichedComments = await Promise.all(
+      comments.map(async (comment) => {
+        try {
+          const videoData = await fetchVideoById(comment.videoId);
+          return {
+            ...comment,
+            video: {
+              title: videoData.title,
+              owner: videoData.owner.name,
+            },
+          };
+        } catch (error) {
+          console.error(`Error fetching video data for videoId ${comment.videoId}:`, error);
+          return comment;
+        }
+      })
+    );
+    return enrichedComments;
+  };
+  
 
   return (
     <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10">
@@ -227,8 +250,11 @@ const UserProfilePage: React.FC = () => {
         <h2 className="text-xl font-bold mb-4 text-gray-800">My Comments</h2>
         {/* Tarjeta de comentario */}
         {comments.length === 0 && <p className="text-gray-600 text-sm text-center">No comments yet</p>}
-          {comments.map((comment, index) => (
-            <div key={index} className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
+          {comments.map((comment) => (
+            <div key={comment.id} className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
+              <p className="text-gray-800 font-bold text-sm text-left">
+                {comment.video?.title || 'Unknown Title'} by {comment.video?.owner || 'Unknown Owner'}
+              </p>
               <p className="text-gray-600 text-sm text-left">{comment.comment_text}</p>
             </div>
         ))}
