@@ -18,12 +18,15 @@ public class UserService {
     private final UserSecurityRepository userSecurityRepository;
     private final CommentRepository commentRepository;
     private final VideoRepository videoRepository;
+    private final VideoService videoService;
 
-    public UserService(UserRepository userRepository, UserSecurityRepository userSecurityRepository, CommentRepository commentRepository, VideoRepository videoRepository) {
+    public UserService(UserRepository userRepository, UserSecurityRepository userSecurityRepository,
+                       CommentRepository commentRepository, VideoRepository videoRepository, VideoService videoService) {
         this.userRepository = userRepository;
         this.userSecurityRepository = userSecurityRepository;
         this.commentRepository = commentRepository;
         this.videoRepository = videoRepository;
+        this.videoService = videoService;
     }
 
     public UserDTO createUser(UserDTO userDTO) {
@@ -59,7 +62,7 @@ public class UserService {
         commentRepository.deleteAll(comments);
 
         List<Video> videos = videoRepository.getVideosByOwner(user);
-        videoRepository.deleteAll(videos);
+        videos.forEach(video -> videoService.deleteVideo(video.getId(), user.getName()));
 
         userSecurityRepository.delete(userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
                 new EntityNotFound(UserSecurity.class, "email", user.getEmail())));
