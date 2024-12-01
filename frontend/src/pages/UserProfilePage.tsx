@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import VideoCard from "../components/VideoCard";
 import Modal from '../components/Modal';
 import {CommentDTO, VideosDTO} from "../types/videoInterfaces.tsx";
-import {getVideosByAuthor, getCommentsByAuthor, updateVideo, deleteVideo} from "../services/videoService.ts";
+import {getVideosByAuthor, getCommentsByAuthor, fetchVideoById, updateVideo, deleteVideo} from "../services/videoService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
 import { toast } from "react-toastify";
@@ -80,11 +80,17 @@ const UserProfilePage: React.FC = () => {
     setCurrentVideoId(null);
   };
 
-  const handleEdit = (video: VideosDTO) => {
+  const handleEdit = async (video: VideosDTO) => {
     setCurrentVideoId(video.id);
     setEditTitle(video.title);
-    setEditDescription("");
-    setEditModalOpen(true);
+    try {
+      const videoData = await fetchVideoById(video.id);
+      setEditDescription(videoData.description || '');
+      setEditModalOpen(true);
+    }
+    catch (error) {
+      console.error('Error fetching video data:', error);
+    }
   };
 
   const saveEdit = async () => {
@@ -146,7 +152,7 @@ const UserProfilePage: React.FC = () => {
             {videos.map((video) => (
               <div key={video.id}>
                 <VideoCard {...video} imagePath={imageUrls[video.id]} />
-                <div className="flex justify-start mt-2 space-x-2">
+                <div className="flex justify-start mt-2 space-x-2 ml-4">
                   <button
                     className="bg-black text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-300"
                     onClick={() => handleEdit(video)}
