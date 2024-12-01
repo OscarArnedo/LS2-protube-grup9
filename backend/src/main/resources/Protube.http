@@ -73,6 +73,10 @@ Authorization: {{auth_token}}
 GET http://localhost:8080/api/videos/author
 Authorization: {{auth_token}}
 
+POST http://localhost:8080/api/videos
+Authorization: {{auth_token}}
+content-type: application/json
+
 
 ###
 DELETE localhost:8080/api/videos/0
