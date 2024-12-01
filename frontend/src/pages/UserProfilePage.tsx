@@ -2,18 +2,24 @@ import React, {useEffect, useState} from "react";
 import VideoCard from "../components/VideoCard";
 import Modal from '../components/Modal';
 import {CommentDTO, VideosDTO} from "../types/videoInterfaces.tsx";
-import {getVideosByAuthor, getCommentsByAuthor} from "../services/videoService.ts";
+import {getVideosByAuthor, getCommentsByAuthor, updateVideo, deleteVideo} from "../services/videoService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
+import { toast } from "react-toastify";
 
 const UserProfilePage: React.FC = () => {
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [videoTitle, setVideoTitle] = useState('');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [comments, setComments] = useState<CommentDTO[]>([]);
   const [videos, setVideos] = useState<VideosDTO[]>([]);
   const {currentUser} = useUser();
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
+  const [currentVideoId, setCurrentVideoId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,12 +59,55 @@ const UserProfilePage: React.FC = () => {
     setUploadModalOpen(false);
   };
 
-  // Ejemplo de datos de videos del usuario
-  /*const userVideos = [
-    { id: 1, title: 'Mi primer video', owner: 'Jane Doe', imagePath: '/assets/video1-thumbnail.png' },
-    { id: 2, title: 'Tutorial de React', owner: 'Jane Doe', imagePath: '/assets/video2-thumbnail.png' },
-    // Añade más videos según sea necesario
-  ];*/
+  const handleDelete = (id: number) => {
+    setCurrentVideoId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (currentVideoId !== null) {
+      try {
+        await deleteVideo(currentVideoId);
+        setVideos(videos.filter((video) => video.id !== currentVideoId));
+        console.log("Deleted video with id:", currentVideoId);
+        toast.success("Video deleted successfully");
+      } catch (error) {
+        console.error("Error deleting video:", error);
+        toast.error("Error deleting video");
+      }
+    }
+    setDeleteModalOpen(false);
+    setCurrentVideoId(null);
+  };
+
+  const handleEdit = (video: VideosDTO) => {
+    setCurrentVideoId(video.id);
+    setEditTitle(video.title);
+    setEditDescription("");
+    setEditModalOpen(true);
+  };
+
+  const saveEdit = async () => {
+    if (currentVideoId !== null) {
+      try {
+        await updateVideo(currentVideoId, editTitle, editDescription);
+        setVideos((prevVideos) =>
+          prevVideos.map((video) =>
+            video.id === currentVideoId
+              ? { ...video, title: editTitle }
+              : video
+          )
+        );
+        console.log("Edited video:", currentVideoId, editTitle, editDescription);
+        toast.success("Video updated successfully");
+      } catch (error) {
+        console.error("Error updating video:", error);
+        toast.error("Error updating video");
+      }
+    }
+    setEditModalOpen(false);
+    setCurrentVideoId(null);
+  };
 
   return (
     <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10">
@@ -88,19 +137,84 @@ const UserProfilePage: React.FC = () => {
       {/* Sección de videos */}
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
         <h2 className="text-xl font-bold mb-4 text-gray-800">My Videos</h2>
-          {videos.length === 0 ? (
-            <div className="flex justify-center items-center h-32">
-              <p className="text-gray-600 text-sm text-center">No videos yet</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-1 justify-items-center">
-              {videos.map(video => (
-                <VideoCard key={video.id} {...video} imagePath={imageUrls[video.id]}/>
-              ))}
-              
-            </div>
-          )}
+        {videos.length === 0 ? (
+          <div className="flex justify-center items-center h-32">
+            <p className="text-gray-600 text-sm text-center">No videos yet</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-1 justify-items-center">
+            {videos.map((video) => (
+              <div key={video.id}>
+                <VideoCard {...video} imagePath={imageUrls[video.id]} />
+                <div className="flex justify-start mt-2 space-x-2">
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-300"
+                    onClick={() => handleEdit(video)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-black text-white px-4 py-2 rounded hover:bg-red-500 transition duration-300"
+                    onClick={() => handleDelete(video.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Modal para eliminar */}
+      <Modal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+        <h3 className="text-lg font-bold mb-4">Are you sure you want to delete this video?</h3>
+        <div className="flex justify-between">
+          <button
+            className="bg-gray-300 px-4 py-2 rounded"
+            onClick={() => setDeleteModalOpen(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded"
+            onClick={confirmDelete}
+          >
+            Delete
+          </button>
+        </div>
+      </Modal>
+
+      {/* Modal para editar */}
+      <Modal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)}>
+        <h3 className="text-lg font-bold mb-4">Edit video</h3>
+        <div>
+          <label className="block text-gray-700">Title</label>
+          <input
+            type="text"
+            className="w-full border rounded px-3 py-2 mb-4"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <label className="block text-gray-700">Descripción</label>
+          <textarea
+            className="w-full border rounded px-3 py-2 mb-4"
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+          />
+          <div className="flex justify-between">
+            <button
+              className="bg-gray-300 px-4 py-2 rounded"
+              onClick={() => setEditModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button className="bg-blue-500 px-4 py-2 rounded text-white" onClick={saveEdit}>
+              Save
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Sección de comentarios */}
       <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg">
