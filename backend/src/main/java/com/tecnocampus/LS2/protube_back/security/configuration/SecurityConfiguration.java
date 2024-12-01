@@ -75,6 +75,7 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                                 .requestMatchers(DELETE, "/api/comments/delete/{id}").permitAll()
                                 .requestMatchers(GET, "/api/users/userDetails").permitAll()
                                 .requestMatchers(POST, "/api/videos").permitAll()
+                                .requestMatchers(DELETE, "/api/videos/{id}").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

@@ -5,12 +5,11 @@ import com.tecnocampus.LS2.protube_back.service.VideoService;
 import com.tecnocampus.LS2.protube_back.service.dto.NewVideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
+import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,11 +39,10 @@ public class VideoController {
         return videoService.getVideoMeta(id);
     }
 
-    @Operation(summary = "Update a video given an id and a videoDTO")
+    @Operation(summary = "Update a video given an id and a metaDTO")
     @PutMapping("/{id}")
-    public VideoDTO updateVideo(@PathVariable Long id, Principal principal, @RequestBody VideoMetaDataDTO videoMetaDataDTO) {
-        logger.info("Principal name: {}", principal.getName());
-        return videoService.updateVideo(id,principal.getName(), videoMetaDataDTO);
+    public VideoUpdateDTO updateVideo(@PathVariable Long id, Principal principal, @RequestBody VideoUpdateDTO videoUpdateDTO) {
+        return videoService.updateVideo(id,principal.getName(), videoUpdateDTO);
     }
 
     @Operation(summary = "Get Videos by author")
@@ -53,6 +51,11 @@ public class VideoController {
         return videoService.getVideosByAuthor(principal.getName());
     }
 
+    @Operation(summary = "Delete a video given an id")
+    @DeleteMapping("/{id}")
+    public void deleteVideo(@PathVariable Long id, Principal principal) {
+        videoService.deleteVideo(id, principal.getName());
+    }
     @Operation(summary = "Create a Video")
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<String> createVideo(
