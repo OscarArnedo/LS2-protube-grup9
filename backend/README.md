@@ -1,11 +1,11 @@
 # PROTUBE BACKEND
 
-### Description
+## Description
 This is the backend of the project. 
 It is a REST API that provides the data for the frontend. 
 It is built with SpringBoot in Java21, and PostgreSQL.
 
-### How to run on DEV environment
+## How to run on DEV environment
 
 1. Clone the repository
 2. Open the project in your favorite IDE
@@ -18,6 +18,8 @@ It is built with SpringBoot in Java21, and PostgreSQL.
        - `ENV_PROTUBE_DB_USER`: The username of the database. For example: *admin*
        - `ENV_PROTUBE_DB_PWD`: The password of the database. For example: *admin1234*
        - `ENV_PROTUBE_STORE_DIR`: The directory where the files are stored. For example: *C:/protube/store/*
-          > [!IMPORTANT] 
-          > The `ENV_PROTUBE_STORE_DIR` must end with a slash `/`
+
+> [!IMPORTANT] 
+> The `ENV_PROTUBE_STORE_DIR` must end with a slash `/`
+
 5. Run the application
