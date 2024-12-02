@@ -34,9 +34,6 @@ const VideoPage: React.FC = () => {
 
                 setLikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
                 setDislikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
-                console.log('Current user:', currentUser);
-                console.log('Video data:', videoData);
-                console.log('Authenticated:', isAuthenticated);
             } catch (error) {
                 console.error('Error fetching video data', error);
             }

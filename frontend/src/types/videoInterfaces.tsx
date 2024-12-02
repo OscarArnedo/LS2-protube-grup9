@@ -13,8 +13,13 @@ export interface HomeVideosDTO {
 
 export interface CommentDTO {
     id: number;
+    videoId: number;
     comment_text: string;
     author: UserDTO;
+    video?: {
+        title: string;
+        owner: string;
+    };
 }
 
 export interface VideoMetaDataDTO {
