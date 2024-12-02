@@ -84,9 +84,14 @@ const UserProfilePage: React.FC = () => {
         tags: videoTags,
       };
       try{
-        const response = await uploadVideo(videoFile, thumbnailFile, newVideoDTO);
+        await uploadVideo(videoFile, thumbnailFile, newVideoDTO);
 
-        setVideos([...videos, response]);
+        const updatedVideos = await getVideosByAuthor();
+        setVideos(updatedVideos);
+
+        const updatedImageUrls = await getImagesForVideos(updatedVideos);
+        setImageUrls(updatedImageUrls);
+        
         toast.success('Video uploaded successfully');
       }catch(error){
         console.error('Error uploading video:', error);
@@ -218,7 +223,7 @@ const UserProfilePage: React.FC = () => {
               &times;
             </button>
             <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Upload Video</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="text-left">
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTitle">
                   Video Title
