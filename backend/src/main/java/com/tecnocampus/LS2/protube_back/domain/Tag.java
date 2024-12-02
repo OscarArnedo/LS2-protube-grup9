@@ -16,6 +16,7 @@ public class Tag {
     @ManyToOne
     private Video video;
 
+    @Column(length = 250)
     private String tag;
 
 }

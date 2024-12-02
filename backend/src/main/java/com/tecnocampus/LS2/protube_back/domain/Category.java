@@ -16,5 +16,6 @@ public class Category {
     @ManyToOne
     private Video video;
 
+    @Column(length = 250)
     private String category;
 }
