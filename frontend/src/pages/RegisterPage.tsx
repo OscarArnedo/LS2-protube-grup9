@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
-import { register } from '../services/userService.ts';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import registerModalIcon from '../assets/registerModalIcon.png';
 
 interface RegisterProps {
-    onRegister: ( name: string, lastName: string, username: string, email: string, password: string) => void;
+    onRegister: ( username: string, email: string, password: string ) => Promise<void>;
     onToggle: () => void;
 }
 
@@ -36,10 +34,9 @@ const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
             return;
         }
         try {
-            await register( username, email, password );
-            onRegister(name, lastName, username, email, password);
+            onRegister( username, email, password );
         } catch (error) {
-            toast.error('Error al registrarse. Intente nuevamente.');
+            toast.error('Registration failed. Please try again.');
         }
         toast.success('Registration successful!');
     };
@@ -47,21 +44,6 @@ const RegisterPage: React.FC<RegisterProps> = ({ onRegister, onToggle }) => {
     return (
         <div className="flex flex-col items-center justify-center">
             <img src={registerModalIcon} alt="User Icon" className="w-24 h-24 mb-4" />
-            <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 9999,
-                    pointerEvents: 'none', 
-                }} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"

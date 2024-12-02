@@ -5,7 +5,7 @@ import logoutIcon from './assets/logoutIcon.png';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from './services/userService';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Modal from './components/Modal';
 import LoginPage from './pages/LoginPage';
@@ -46,7 +46,6 @@ function App() {
             return response.access_token;
         } catch (error) {
             console.error('Login failed:', error);
-            toast.error('Login failed. Please check your credentials');
             throw error;
         }
     };
@@ -55,10 +54,9 @@ function App() {
         try {
             const response = await register(name, email, password);
             console.log('Registration successful:', response);
-            toast.success('Registration successful! You can now log in.');
             setModalOpen(false);
         } catch (error) {
-            toast.error('Registration failed. Please try again.');
+            console.log('Registration failed. Please try again.');
         }
     };
 
