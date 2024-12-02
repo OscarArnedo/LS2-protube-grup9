@@ -150,3 +150,37 @@ export const deleteVideo = async (videoId: number) => {
     });
     return response.data;
 };
+
+export const uploadVideo = async (
+    videoFile: File,
+    imageFile: File,
+    newVideoDTO: {
+      title: string;
+      description: string;
+      categories: string;
+      tags: string[];
+    }
+  ): Promise<any> => {
+    const token = getCookie('authToken');
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+  
+    const formData = new FormData();
+    formData.append('videoFile', videoFile);
+    formData.append('imageFile', imageFile);
+    formData.append('newVideoDTO', JSON.stringify(newVideoDTO));
+  
+    try {
+      const response = await axios.post(getEnv().API_BASE_URL + '/videos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading video', error);
+      throw error;
+    }
+  };
