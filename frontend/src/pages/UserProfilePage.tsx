@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import VideoCard from "../components/VideoCard";
 import Modal from '../components/Modal';
 import {CommentDTO, VideosDTO} from "../types/videoInterfaces.tsx";
-import {getVideosByAuthor, getCommentsByAuthor, fetchVideoById, updateVideo, deleteVideo } from "../services/videoService.ts";
+import {getVideosByAuthor, getCommentsByAuthor, fetchVideoById, updateVideo, deleteVideo, uploadVideo } from "../services/videoService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
 import {toast} from "react-toastify";
@@ -73,14 +73,37 @@ const UserProfilePage: React.FC = () => {
     setVideoTags(videoTags.filter(t => t !== tag));
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Lógica para manejar la subida de videos
+    
     if (videoFile  && thumbnailFile) {
-      console.log('Video uploaded:', videoTitle, videoDescription, videoCategory, videoTags, videoFile, thumbnailFile);
-      // Aquí puedes añadir la lógica para subir el video al servidor
+      const newVideoDTO = {
+        title: videoTitle,
+        description: videoDescription,
+        categories: videoCategory,
+        tags: videoTags,
+      };
+      try{
+        const response = await uploadVideo(videoFile, thumbnailFile, newVideoDTO);
+
+        setVideos([...videos, response]);
+        toast.success('Video uploaded successfully');
+      }catch(error){
+        console.error('Error uploading video:', error);
+        toast.error('Error uploading video');
+      }
+      setUploadPopupOpen(false);
+
+      setVideoTitle('');
+      setVideoDescription('');
+      setVideoCategory('');
+      setVideoTags([]);
+      setVideoFile(null);
+      setThumbnailFile(null);
+    }else{
+      toast.error('Please fill all the fields and select the files');
     }
-    setUploadPopupOpen(false);
+    
   };
   const handleDelete = (id: number) => {
     setCurrentVideoId(id);
