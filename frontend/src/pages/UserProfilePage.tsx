@@ -213,130 +213,130 @@ const UserProfilePage: React.FC = () => {
   
       {/* Pop-up de subida de videos */}
       {isUploadPopupOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-        <div className="bg-white w-full sm:w-3/4 md:w-1/2 max-w-lg p-8 rounded-lg shadow-lg relative z-50 mx-4">
-          <button
-            className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-            onClick={handleClosePopup}
-          >
-            &times;
-          </button>
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Upload Video</h2>
-          <form onSubmit={handleSubmit} className="text-left">
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTitle">
-                Video Title
-              </label>
-              <input
-                type="text"
-                id="videoTitle"
-                name="videoTitle"
-                value={videoTitle}
-                onChange={(e) => setVideoTitle(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoDescription">
-                Video Description
-              </label>
-              <textarea
-                id="videoDescription"
-                name="videoDescription"
-                value={videoDescription}
-                onChange={(e) => setVideoDescription(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categories">
-                Video Category
-              </label>
-              <input
-                type="text"
-                id="categories"
-                name="categories"
-                value={videoCategory}
-                onChange={(e) => setVideoCategory(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTags">
-                Video Tags
-              </label>
-              <div className="flex items-center">
-                <input
-                  type="text"
-                  id="videoTags"
-                  name="videoTags"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="bg-white w-full sm:w-3/4 md:w-1/2 max-w-lg p-8 rounded-lg shadow-lg relative z-50 mx-4 mt-32 max-h-[80vh] overflow-y-auto">
+      <button
+        className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-3xl font-bold"
+        onClick={handleClosePopup}
+      >
+        &times;
+      </button>
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Upload Video</h2>
+      <form onSubmit={handleSubmit} className="text-left">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTitle">
+            Video Title
+          </label>
+          <input
+            type="text"
+            id="videoTitle"
+            name="videoTitle"
+            value={videoTitle}
+            onChange={(e) => setVideoTitle(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoDescription">
+            Video Description
+          </label>
+          <textarea
+            id="videoDescription"
+            name="videoDescription"
+            value={videoDescription}
+            onChange={(e) => setVideoDescription(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categories">
+            Video Category
+          </label>
+          <input
+            type="text"
+            id="categories"
+            name="categories"
+            value={videoCategory}
+            onChange={(e) => setVideoCategory(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTags">
+            Video Tags
+          </label>
+          <div className="flex items-center">
+            <input
+              type="text"
+              id="videoTags"
+              name="videoTags"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            <button
+              type="button"
+              className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm focus:outline-none focus:shadow-outline"
+              onClick={handleAddTag}
+            >
+              Add Tag
+            </button>
+          </div>
+          <div className="flex flex-wrap mt-2">
+            {videoTags.map((tag) => (
+              <div key={tag} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full mr-2 mb-2 flex items-center">
+                <span>{tag}</span>
                 <button
                   type="button"
-                  className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm focus:outline-none focus:shadow-outline"
-                  onClick={handleAddTag}
+                  className="ml-2 text-red-500"
+                  onClick={() => handleRemoveTag(tag)}
                 >
-                  Add Tag
+                  &times;
                 </button>
               </div>
-              <div className="flex flex-wrap mt-2">
-                {videoTags.map((tag) => (
-                  <div key={tag} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full mr-2 mb-2 flex items-center">
-                    <span>{tag}</span>
-                    <button
-                      type="button"
-                      className="ml-2 text-red-500"
-                      onClick={() => handleRemoveTag(tag)}
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="thumbnailFile">
-                Thumbnail Image
-              </label>
-              <input
-                type="file"
-                id="thumbnailFile"
-                name="thumbnailFile"
-                onChange={(e) => setThumbnailFile(e.target.files ? e.target.files[0] : null)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoFile">
-                Video File
-              </label>
-              <input
-                type="file"
-                id="videoFile"
-                name="videoFile"
-                onChange={(e) => setVideoFile(e.target.files ? e.target.files[0] : null)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="flex justify-center mt-6">
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Upload
-              </button>
-            </div>
-          </form>
+            ))}
+          </div>
         </div>
-      </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="thumbnailFile">
+            Thumbnail Image
+          </label>
+          <input
+            type="file"
+            id="thumbnailFile"
+            name="thumbnailFile"
+            onChange={(e) => setThumbnailFile(e.target.files ? e.target.files[0] : null)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoFile">
+            Video File
+          </label>
+          <input
+            type="file"
+            id="videoFile"
+            name="videoFile"
+            onChange={(e) => setVideoFile(e.target.files ? e.target.files[0] : null)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
+        </div>
+        <div className="flex justify-center mt-6">
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Upload
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
       )}
   
       {/* Sección de videos */}
