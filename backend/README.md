@@ -27,7 +27,7 @@ It is built with SpringBoot in Java21, and PostgreSQL.
 > Database must be active before running backend.
 
 > [!NOTE]
-> If you want to see some video examples run the tooling/videoGrabber script and set the path of the videos to the ENV variable `ENV_PROTUBE_STORE_DIR`.  
+> If you want to see some video examples run the tooling/videoGrabber script and set the path of the videos to the ENV variable `ENV_PROTUBE_STORE_DIR`.
 > Be aware that the all the users created in the database will have by default the same password `password123`. 
  
 ## How to run on PROD environment
