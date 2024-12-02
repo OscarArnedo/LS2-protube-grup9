@@ -18,8 +18,13 @@ It is built with SpringBoot in Java21, and PostgreSQL.
        - `ENV_PROTUBE_DB_USER`: The username of the database. For example: *admin*
        - `ENV_PROTUBE_DB_PWD`: The password of the database. For example: *admin1234*
        - `ENV_PROTUBE_STORE_DIR`: The directory where the files are stored. For example: *C:/protube/store/*
+5. Run the application
 
 > [!IMPORTANT] 
 > The `ENV_PROTUBE_STORE_DIR` must end with a slash `/`
 
-5. Run the application
+> [!NOTE]
+> Database must be active before running backend.
+
+> [!NOTE]
+> If you want to see some video examples run the tooling/videoGrabber script and set the path of the videos to the ENV variable `ENV_PROTUBE_STORE_DIR`.
