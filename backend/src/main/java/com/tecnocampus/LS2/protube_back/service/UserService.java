@@ -7,6 +7,8 @@ import com.tecnocampus.LS2.protube_back.persistance.UserSecurityRepository;
 import com.tecnocampus.LS2.protube_back.persistance.VideoRepository;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
 import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Service
 public class UserService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserSecurityRepository userSecurityRepository;
     private final CommentRepository commentRepository;
@@ -31,7 +35,11 @@ public class UserService {
 
     public UserDTO createUser(UserDTO userDTO) {
         User user = new User(userDTO);
+
+        String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+
         UserSecurity userSecurity = new UserSecurity(userDTO);
+        userSecurity.setPassword(encodedPassword);
         userSecurity.setRole(ERole.USER);
         userSecurityRepository.save(userSecurity);
         return new UserDTO(userRepository.save(user));
