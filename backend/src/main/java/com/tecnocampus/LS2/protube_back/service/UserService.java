@@ -53,20 +53,33 @@ public class UserService {
         return userRepository.findAll().stream().map(UserDTO::new).toList();
     }
 
-    public UserDTO updateUser(String id, UserDTO userDTO) {
-        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFound(User.class, "id", id));
+    public UserDTO updateUser(String name, UserDTO userDTO) {
+        User user = userRepository.findByName(name).orElseThrow(()->new EntityNotFound(User.class, "name", name));
+        UserSecurity userSecurity = userSecurityRepository.findByEmail(user.getEmail()).orElseThrow(()->
+                new EntityNotFound(UserSecurity.class, "email", user.getEmail()));
 
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
+        if(userDTO.getPassword() != null  && !userDTO.getPassword().isEmpty()) {
+            String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+            userSecurity.setPassword(encodedPassword);
+        }
+        if(userDTO.getName() != null && !userDTO.getName().isEmpty()) {
+            user.setName(userDTO.getName());
+            userSecurity.setUsername(userDTO.getName());
+        }
+        if(userDTO.getEmail() != null && !userDTO.getEmail().isEmpty()) {
+            user.setEmail(userDTO.getEmail());
+            userSecurity.setEmail(userDTO.getEmail());
+        }
+        userSecurityRepository.save(userSecurity);
 
         return new UserDTO(userRepository.save(user));
     }
 
     @Transactional
-    public void deleteUser(String id) {
-        User user = userRepository.findById(id).orElseThrow(()->new EntityNotFound(User.class, "id", id));
+    public void deleteUser(String name) {
+        User user = userRepository.findByName(name).orElseThrow(()->new EntityNotFound(User.class, "name", name));
 
-        List<Comment> comments = commentRepository.getCommentsByAuthorId(id);
+        List<Comment> comments = commentRepository.getCommentsByAuthorId(user.getId());
         commentRepository.deleteAll(comments);
 
         List<Video> videos = videoRepository.getVideosByOwner(user);

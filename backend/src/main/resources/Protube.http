@@ -13,7 +13,7 @@ content-type: application/json
 
 {
   "username": "Luis",
-  "password": "Luisaco123."
+  "password": "Luisaco123*"
 }
 > {%
     client.global.set("auth_token", response.headers.valueOf("Authorization"));
@@ -82,3 +82,17 @@ content-type: application/json
 DELETE localhost:8080/api/videos/0
 Authorization: {{auth_token}}
 
+###
+PUT localhost:8080/api/users
+Authorization: {{auth_token}}
+content-type: application/json
+
+{
+  "name": "Luis",
+  "email": "luisitooo@gmail.com",
+  "password": "Luisaco123."
+}
+
+###
+DELETE localhost:8080/api/users
+Authorization: {{auth_token}}
