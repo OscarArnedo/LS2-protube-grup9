@@ -17,6 +17,7 @@ public class Comment {
     @ManyToOne
     private Video video;
 
+    @Column(length = 9999)
     private String comment_text;
 
     @ManyToOne

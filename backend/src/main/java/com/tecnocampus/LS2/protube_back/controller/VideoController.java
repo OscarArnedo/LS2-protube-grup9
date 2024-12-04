@@ -2,10 +2,7 @@ package com.tecnocampus.LS2.protube_back.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tecnocampus.LS2.protube_back.service.VideoService;
-import com.tecnocampus.LS2.protube_back.service.dto.NewVideoDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
+import com.tecnocampus.LS2.protube_back.service.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
@@ -74,6 +71,17 @@ public class VideoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
         return ResponseEntity.ok("Video created successfully");
+    }
+    @Operation(summary = "Get all types of categories")
+    @GetMapping("/categories")
+    public List<String> getCategories() {
+        return videoService.getCategories();
+    }
+
+    @Operation(summary = "Get all videos by category")
+    @GetMapping("/category/{category}")
+    public List<VideoDTO> getVideosByCategory(@PathVariable String category) {
+        return videoService.getVideosByCategory(category);
     }
 
 }

@@ -1,7 +1,8 @@
+// src/pages/HomeVideos.tsx
 import React, { useState, useEffect } from 'react';
 import VideoCard from '../components/VideoCard.tsx';
 import { VideosDTO } from '../types/videoInterfaces.tsx';
-import { fetchVideos } from '../services/videoService';
+import { fetchVideos, fetchVideosByCategory, fetchCategories } from '../services/videoService';
 import useScrollToTop from '../hooks/scrollToTop.tsx';
 import LoadingComponent from '../components/Loading.tsx';
 import { getImagesForVideos } from '../utils/functions.ts';
@@ -13,14 +14,15 @@ interface HomeVideosProps {
 const HomeVideos: React.FC<HomeVideosProps> = ({ searchQuery }) => {
     const [videos, setVideos] = useState<VideosDTO[]>([]);
     const [filteredVideos, setFilteredVideos] = useState<VideosDTO[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
     const { isVisible, scrollToTop } = useScrollToTop();
     const [isLoading, setIsLoading] = useState(true);
 
-    const getVideos = async () => {
+    const getVideos = async (category?: string) => {
         try {
-            const videosData: VideosDTO[] = await fetchVideos();
-            console.log('Videos fetched:', videosData);
+            const videosData: VideosDTO[] = category ? await fetchVideosByCategory(category) : await fetchVideos();
             setVideos(videosData);
             setFilteredVideos(videosData);
 
@@ -35,12 +37,22 @@ const HomeVideos: React.FC<HomeVideosProps> = ({ searchQuery }) => {
         }
     };
 
+    const getCategories = async () => {
+        try {
+            const categoriesData: string[] = await fetchCategories();
+            setCategories(categoriesData);
+        } catch (error) {
+            console.error('Error fetching categories');
+        }
+    };
+
     useEffect(() => {
         getVideos();
+        getCategories();
     }, []);
 
     useEffect(() => {
-        const handelSearch = () => {
+        const handleSearch = () => {
             if (searchQuery.trim() === '') {
                 setFilteredVideos(videos);
             } else {
@@ -53,11 +65,32 @@ const HomeVideos: React.FC<HomeVideosProps> = ({ searchQuery }) => {
                 );
             }
         };
-        handelSearch();
+        handleSearch();
     }, [searchQuery, videos]);
+
+    const handleCategoryClick = (category: string) => {
+        if (selectedCategory === category) {
+            setSelectedCategory(null);
+            getVideos();
+        } else {
+            setSelectedCategory(category);
+            getVideos(category);
+        }
+    };
 
     return (
         <div>
+            <div className="flex justify-center mb-4">
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        onClick={() => handleCategoryClick(category)}
+                        className={`px-4 py-2 m-2 rounded ${selectedCategory === category ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
             {isLoading ? (
                 <LoadingComponent />
             ) : (

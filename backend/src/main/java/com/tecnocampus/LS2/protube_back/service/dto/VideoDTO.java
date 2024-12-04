@@ -11,6 +11,7 @@ public class VideoDTO {
     private String title;
     private String owner;
     private String imagePath;
+    private String category;
 
     public VideoDTO() {
     }
@@ -19,6 +20,7 @@ public class VideoDTO {
         this.title = video.getTitle();
         this.owner = video.getOwner().getName();
         this.imagePath = video.getImagePath();
+
     }
 
     @Override

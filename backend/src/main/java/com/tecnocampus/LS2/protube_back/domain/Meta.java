@@ -16,5 +16,6 @@ public class Meta {
     @ManyToOne
     private Video video;
 
+    @Column(length = 9999)
     private String description;
 }
