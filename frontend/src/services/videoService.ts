@@ -39,7 +39,24 @@ const fetchMedia = async (fileName: string, fileType:string): Promise<string> =>
         throw error;
     }
 }
-
+export const fetchVideosByCategory = async (category: string): Promise<VideosDTO[]> => {
+    try {
+      const response = await axios.get(getEnv().API_BASE_URL+`/videos/category/${category}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching videos by category', error);
+      throw error;
+    }
+}
+export const fetchCategories = async (): Promise<string[]> => {
+    try {
+      const response = await axios.get(getEnv().API_BASE_URL+'/videos/categories');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching categories', error);
+      throw error;
+    }
+}
 export const updateComment = async (commentId: number, commentText: string) => {
     const token = getCookie('authToken');
     if (!token) {

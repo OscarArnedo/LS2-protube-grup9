@@ -2,7 +2,11 @@ import React from 'react';
 import { VideosDTO } from '../types/videoInterfaces';
 import { useNavigate } from 'react-router-dom';
 
-const VideoCard: React.FC<VideosDTO> = ({ id, title, owner, imagePath }) => {
+interface VideoCardProps extends VideosDTO {
+        category?: string; // Make category optional
+}
+
+const VideoCard: React.FC<VideoCardProps> = ({ id, title, owner, imagePath, category }) => {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -22,7 +26,8 @@ const VideoCard: React.FC<VideosDTO> = ({ id, title, owner, imagePath }) => {
             />
             <div className="p-4 flex flex-col justify-between flex-grow">
                 <h3 className="text-lg font-bold mb-2 line-clamp-2">{title}</h3>
-                <p className="text-gray-600 text-sm mt-auto">{owner}</p>
+                <p className="text-gray-600 text-sm">{owner}</p>
+                {category && <p className="text-gray-500 text-xs mt-2">{category}</p>} {/* Conditionally render category */}
             </div>
         </div>
     );
