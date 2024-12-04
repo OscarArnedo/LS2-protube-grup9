@@ -23,6 +23,8 @@ public class SecurityConfiguration implements WebMvcConfigurer {
     private static final String[] WHITE_LIST_URL = {
             "/",
             "/api/videos",
+            "/api/videos/category/**",
+            "/api/videos/categories",
             "/api/videos/{id}",
             "/authenticate",
             "/swagger-resources",

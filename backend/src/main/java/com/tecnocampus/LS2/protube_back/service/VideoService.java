@@ -2,11 +2,7 @@ package com.tecnocampus.LS2.protube_back.service;
 
 import com.tecnocampus.LS2.protube_back.domain.*;
 import com.tecnocampus.LS2.protube_back.persistance.*;
-import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.NewVideoDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoMetaDataDTO;
-import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
+import com.tecnocampus.LS2.protube_back.service.dto.*;
 import com.tecnocampus.LS2.protube_back.service.exception.EntityNotFound;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -45,8 +41,13 @@ public class VideoService {
     }
     public List<VideoDTO> getVideos(){
         List<Video> videos = videoRepository.findAll();
+        //For each video search the category
         return videos.stream().map(video -> {
-            VideoDTO videoDTO = new VideoDTO(video);;
+            Category category = categoryRepository.getCategoryByVideoId(video.getId());
+            VideoDTO videoDTO = new VideoDTO(video);
+            if (category != null) {
+                videoDTO.setCategory(category.getCategory());
+            }
             return videoDTO;
         }).collect(Collectors.toList());
     }
@@ -85,7 +86,14 @@ public class VideoService {
     public List<VideoDTO> getVideosByAuthor(String name) throws Exception {
         User author = userRepository.findByName(name).orElseThrow(() -> new EntityNotFound(User.class, "name", name));
         List<Video> videos = videoRepository.getVideosByOwner(author);
-        return videos.stream().map(VideoDTO::new).collect(Collectors.toList());
+        return videos.stream().map(video -> {
+            Category category = categoryRepository.getCategoryByVideoId(video.getId());
+            VideoDTO videoDTO = new VideoDTO(video);
+            if (category != null) {
+                videoDTO.setCategory(category.getCategory());
+            }
+            return videoDTO;
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -160,4 +168,27 @@ public class VideoService {
         videoFile.transferTo(file);
         return fileName;
     }
+
+    public List<String> getCategories() {
+        return categoryRepository.findDistinctCategories();
+    }
+
+    public List<VideoDTO> getVideosByCategory(String category) {
+        List<Category> categories = categoryRepository.getCategoriesByCategory(category);
+
+        List<Video> videos = categories.stream()
+                .map(categoria -> videoRepository.findById(categoria.getVideo().getId()).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        return videos.stream().map(video -> {
+            Category aux = categoryRepository.getCategoryByVideoId(video.getId());
+            VideoDTO videoDTO = new VideoDTO(video);
+            if (category != null) {
+                videoDTO.setCategory(aux.getCategory());
+            }
+            return videoDTO;
+        }).collect(Collectors.toList());
+    }
+
 }

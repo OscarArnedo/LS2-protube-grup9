@@ -82,3 +82,8 @@ content-type: application/json
 DELETE localhost:8080/api/videos/0
 Authorization: {{auth_token}}
 
+###
+GET localhost:8080/api/videos/categories
+
+###
+GET localhost:8080/api/videos/category/Music

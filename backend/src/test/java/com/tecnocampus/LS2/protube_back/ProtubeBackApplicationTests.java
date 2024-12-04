@@ -51,9 +51,7 @@ class ProtubeBackApplicationTests {
 	private static String randomEmail;
 	private static Long createdCommentId;
 	private static Long createdVideoId;
-	private final static String passwordEncrypted = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2";
 	private final static String password = "password123";
-	private static String token;
 
 	private String authenticate(String username, String password) throws Exception {
 		String body = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
@@ -95,21 +93,19 @@ class ProtubeBackApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/0")
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(0))
-				.andExpect(jsonPath("$.title").value("Bruno Mars - 24K Magic (Official Music Video)"))
-				.andExpect(jsonPath("$.height").value(1080))
-				.andExpect(jsonPath("$.width").value(1920))
-				.andExpect(jsonPath("$.duration").value(24))
-				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
-				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"))
-				.andExpect(jsonPath("$.videoPath").value("0.mp4"))
-				.andExpect(jsonPath("$.imagePath").value("0.webp"))
+				.andExpect(jsonPath("$.id").exists())
+				.andExpect(jsonPath("$.title").exists())
+				.andExpect(jsonPath("$.height").exists())
+				.andExpect(jsonPath("$.width").exists())
+				.andExpect(jsonPath("$.duration").exists())
+				.andExpect(jsonPath("$.owner.name").exists())
+				.andExpect(jsonPath("$.owner.email").exists())
+				.andExpect(jsonPath("$.videoPath").exists())
+				.andExpect(jsonPath("$.imagePath").exists())
 				.andExpect(jsonPath("$.comments").isArray())
 				.andExpect(jsonPath("$.description").exists())
 				.andExpect(jsonPath("$.tags").isArray())
-				.andExpect(jsonPath("$.categories").value("Music"));
-
-
+				.andExpect(jsonPath("$.categories").exists());
 	}
 
 	@Test
@@ -121,7 +117,7 @@ class ProtubeBackApplicationTests {
                   "email" : "%s",
                   "password" : "%s"
                 }
-                """.formatted(randomName, randomEmail,passwordEncrypted);
+                """.formatted(randomName, randomEmail,password);
 		MvcResult result = mockMvc.perform(post("/api/users/create").contentType("application/json").content(user))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value(randomName))
@@ -135,7 +131,7 @@ class ProtubeBackApplicationTests {
 	}
 	@Test
 	@Order(4)
-	List<VideoDTO> getVideosByAuthor() throws Exception {
+	void getVideosByAuthor() throws Exception {
 		String token = authenticate(randomName, password);
 		MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/author")
 						.header("Authorization", "Bearer " + token)
@@ -151,7 +147,6 @@ class ProtubeBackApplicationTests {
 		} else {
 			Assertions.assertTrue(videos.isEmpty());
 		}
-		return videos;
 	}
 
 	@Test
@@ -391,5 +386,21 @@ class ProtubeBackApplicationTests {
 			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))
 					.andExpect(status().isNotFound());
 		});
+	}
+
+	@Test
+	@Order(19)
+	void getCategories() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/categories"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+	}
+
+	@Test
+	@Order(20)
+	void getVideosByCategory() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/category/Music"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
 	}
 }

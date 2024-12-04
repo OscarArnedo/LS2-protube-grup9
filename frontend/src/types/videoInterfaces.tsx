@@ -5,6 +5,7 @@ export interface VideosDTO {
     title: string;
     owner: string;
     imagePath: string;
+    category?: string;
 }
 
 export interface HomeVideosDTO {
