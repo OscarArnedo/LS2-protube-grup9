@@ -32,7 +32,7 @@ const UserProfilePage: React.FC = () => {
   const [editDescription, setEditDescription] = useState('');
   const [editName, setEditName] = useState(currentUser?.name || '');
   const [editEmail, setEditEmail] = useState(currentUser?.email || '');
-  const [editPassword, setEditPassword] = useState('');
+  const [editPassword, setEditPassword] = useState(currentUser?.password || '');
 
   const fetchData = async () => {
     try {
@@ -54,6 +54,7 @@ const UserProfilePage: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+    console.log('Current user:', currentUser);
   }, []);
 
   /*const fetchedCategory = async () => {
@@ -204,7 +205,7 @@ const UserProfilePage: React.FC = () => {
     try {
       await updateUser(editName, editEmail, editPassword);
       toast.success("User updated successfully");
-      const response = await login(editName, "password123"/*editPassword*/);
+      const response = await login(editName, editPassword);
       localStorage.setItem('userName', editName);
       setCookie('authToken', response.access_token, 7);
       await fetchData();
@@ -479,40 +480,44 @@ const UserProfilePage: React.FC = () => {
         {/* Edit User Modal */}
         <Modal isOpen={isEditUserModalOpen} onClose={() => setEditUserModalOpen(false)}>
           <h3 className="text-lg font-bold mb-4">Edit User</h3>
-          <div>
-            <label className="block text-gray-700">Name</label>
-            <input
-                type="text"
-                className="w-full border rounded px-3 py-2 mb-4"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-            />
-            <label className="block text-gray-700">Email</label>
-            <input
-                type="email"
-                className="w-full border rounded px-3 py-2 mb-4"
-                value={editEmail}
-                onChange={(e) => setEditEmail(e.target.value)}
-            />
-            <label className="block text-gray-700">Password</label>
-            <input
-                type="password"
-                className="w-full border rounded px-3 py-2 mb-4"
-                value={editPassword}
-                onChange={(e) => setEditPassword(e.target.value)}
-            />
-            <div className="flex justify-between">
-              <button
-                  className="bg-gray-300 px-4 py-2 rounded"
-                  onClick={() => setEditUserModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button className="bg-blue-500 px-4 py-2 rounded text-white" onClick={saveEditUser}>
-                Save
-              </button>
+          <form onSubmit={(e) => { e.preventDefault(); saveEditUser(); }}>
+            <div>
+              <label className="block text-gray-700">Name</label>
+              <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+              />
+              <label className="block text-gray-700">Email</label>
+              <input
+                  type="email"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+              />
+              <label className="block text-gray-700">Password</label>
+              <input
+                  type="password"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  required
+              />
+              <div className="flex justify-between">
+                <button
+                    type="button"
+                    className="bg-gray-300 px-4 py-2 rounded"
+                    onClick={() => setEditUserModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="bg-blue-500 px-4 py-2 rounded text-white">
+                  Save
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
         </Modal>
 
         {/* Delete User Modal */}
