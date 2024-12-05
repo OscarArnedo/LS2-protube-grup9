@@ -3,10 +3,11 @@ import VideoCard from "../components/VideoCard";
 import Modal from '../components/Modal';
 import {CommentDTO, VideosDTO} from "../types/videoInterfaces.tsx";
 import {getVideosByAuthor, getCommentsByAuthor, fetchVideoById, updateVideo, deleteVideo, uploadVideo} from "../services/videoService.ts";
-import {deleteUser, updateUser} from "../services/userService.ts";
+import {deleteUser, login, updateUser} from "../services/userService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
 import {toast} from "react-toastify";
+import {setCookie} from "../utils/cookies.ts";
 
 const UserProfilePage: React.FC = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -24,7 +25,7 @@ const UserProfilePage: React.FC = () => {
   const [comments, setComments] = useState<CommentDTO[]>([]);
   const [videos, setVideos] = useState<VideosDTO[]>([]);
   // @ts-ignore
-  const {currentUser, setCurrentUser} = useUser();
+  const {currentUser, fetchCurrentUser} = useUser();
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
   const [currentVideoId, setCurrentVideoId] = useState<number | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -33,25 +34,25 @@ const UserProfilePage: React.FC = () => {
   const [editEmail, setEditEmail] = useState(currentUser?.email || '');
   const [editPassword, setEditPassword] = useState('');
 
+  const fetchData = async () => {
+    try {
+      await fetchCurrentUser();
+      const commentsData = await getCommentsByAuthor();
+      const enrichComments = await enrichCommentsWithVideoData(commentsData);
+      setComments(enrichComments);
+
+      const videosData = await getVideosByAuthor();
+      setVideos(videosData);
+
+      const imagesUrlsMap = await getImagesForVideos(videosData);
+      setImageUrls(imagesUrlsMap);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const commentsData = await getCommentsByAuthor();
-        const enrichComments = await enrichCommentsWithVideoData(commentsData);
-        setComments(enrichComments);
-
-        const videosData = await getVideosByAuthor();
-        setVideos(videosData);
-
-        const imagesUrlsMap = await getImagesForVideos(videosData);
-        setImageUrls(imagesUrlsMap);
-
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -202,9 +203,11 @@ const UserProfilePage: React.FC = () => {
   const saveEditUser = async () => {
     try {
       await updateUser(editName, editEmail, editPassword);
-      setCurrentUser({...currentUser, name: editName, email: editEmail});
       toast.success("User updated successfully");
-      window.location.reload();
+      const response = await login(editName, "password123"/*editPassword*/);
+      localStorage.setItem('userName', editName);
+      setCookie('authToken', response.access_token, 7);
+      await fetchData();
     } catch (error) {
       console.error("Error updating user:", error);
       toast.error("Error updating user");
