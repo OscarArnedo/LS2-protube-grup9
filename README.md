@@ -71,7 +71,7 @@ This command above will open a port 5173 where you can access from the browser.
 ### Video searcher
 On the home page there's a Searching Bar were you can search your videos using their title or the name of the user that uploded this video.  
 
-<img src="https://github.com/user-attachments/assets/c923692a-7f19-4fe2-8970-d7953aac3dac" alt="videoSearcher" widtth="650">  
+<img src="https://github.com/user-attachments/assets/c923692a-7f19-4fe2-8970-d7953aac3dac" alt="videoSearcher" widtth="800">  
 
 ### Documentation using Swagger
 We developed a backend documentation using Swagger to specify the endpoints of the api. You can access to this documentation accessing this address:  
@@ -79,13 +79,14 @@ http://localhost:8080/swagger-ui/index.html
 
 <img src="https://github.com/user-attachments/assets/2149ec0c-5dde-4bca-a322-0bb19fcfc3e0" alt="swaggerImage" width="650">  
 
+### Groupe videos by Category
+You can filter the videos by their categories:  
+
+<img src="https://github.com/user-attachments/assets/48f35210-dcfa-4c44-9a92-6597239fb618" alt="categoriesImage" width="650">  
+  
 ### Responsiveness
 This app adjusts to all types of devices thanks to the library Tailwind CSS.  
 
-Normal view:  
-<br/>
-<img src="https://github.com/user-attachments/assets/a7b49a4a-dfc4-40cb-900a-bec2d68ce761" alt="homePage" width="650">  
-  
 View using an Ipad Mini:  
 <br/>
 <img src="https://github.com/user-attachments/assets/758cf9cc-4f08-4dec-9f16-81839ce7c030" alt="ipadHome" width="400">    
