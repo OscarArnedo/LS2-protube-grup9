@@ -23,6 +23,8 @@ public class SecurityConfiguration implements WebMvcConfigurer {
     private static final String[] WHITE_LIST_URL = {
             "/",
             "/api/videos",
+            "/api/videos/category/**",
+            "/api/videos/categories",
             "/api/videos/{id}",
             "/authenticate",
             "/swagger-resources",
@@ -33,7 +35,10 @@ public class SecurityConfiguration implements WebMvcConfigurer {
             "/v3/api-docs/**",
             "/assets/**",
             "/api/users/create",
-            "/media/**"
+            "/media/**",
+            "/video/**",
+            "/profile",
+            "/index.html"
         };
 
     @Override
@@ -69,12 +74,15 @@ public class SecurityConfiguration implements WebMvcConfigurer {
                                 //.requestMatchers( "/**").hasAnyRole("ADMIN")
                                 .requestMatchers(POST,"/authenticate").permitAll()
                                 .requestMatchers(POST,"/api/user/create").permitAll()
-                                .requestMatchers(PUT,"/api/videos/{id}").hasAnyRole("ADMIN", "USER")
+                                .requestMatchers(PUT,"/api/videos/{id}").permitAll()
                                 .requestMatchers(POST, "/api/comments/create").permitAll()
                                 .requestMatchers(PATCH, "/api/comments/{commentId}/text").permitAll()
                                 .requestMatchers(DELETE, "/api/comments/delete/{id}").permitAll()
                                 .requestMatchers(GET, "/api/users/userDetails").permitAll()
+                                .requestMatchers(POST, "/api/videos").permitAll()
                                 .requestMatchers(DELETE, "/api/videos/{id}").permitAll()
+                                .requestMatchers(PUT, "/api/users").permitAll()
+                                .requestMatchers(DELETE, "/api/users").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

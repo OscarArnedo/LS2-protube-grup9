@@ -39,7 +39,24 @@ const fetchMedia = async (fileName: string, fileType:string): Promise<string> =>
         throw error;
     }
 }
-
+export const fetchVideosByCategory = async (category: string): Promise<VideosDTO[]> => {
+    try {
+      const response = await axios.get(getEnv().API_BASE_URL+`/videos/category/${category}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching videos by category', error);
+      throw error;
+    }
+}
+export const fetchCategories = async (): Promise<string[]> => {
+    try {
+      const response = await axios.get(getEnv().API_BASE_URL+'/videos/categories');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching categories', error);
+      throw error;
+    }
+}
 export const updateComment = async (commentId: number, commentText: string) => {
     const token = getCookie('authToken');
     if (!token) {
@@ -118,3 +135,69 @@ export const getVideosByAuthor = async () => {
     );
     return response.data;
 }
+
+export const updateVideo = async (videoId: number, title: string, description: string) => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.put(
+        getEnv().API_BASE_URL+`/videos/${videoId}`,
+        {
+            "title": title,
+            "description": description},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+    return response.data;
+}
+
+export const deleteVideo = async (videoId: number) => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    const response = await axios.delete(getEnv().API_BASE_URL+`/videos/${videoId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
+export const uploadVideo = async (
+    videoFile: File,
+    imageFile: File,
+    newVideoDTO: {
+      title: string;
+      description: string;
+      categories: string;
+      tags: string[];
+    }
+  ): Promise<any> => {
+    const token = getCookie('authToken');
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+  
+    const formData = new FormData();
+    formData.append('videoFile', videoFile);
+    formData.append('imageFile', imageFile);
+    formData.append('newVideoDTO', JSON.stringify(newVideoDTO));
+  
+    try {
+      const response = await axios.post(getEnv().API_BASE_URL + '/videos', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading video', error);
+      throw error;
+    }
+  };

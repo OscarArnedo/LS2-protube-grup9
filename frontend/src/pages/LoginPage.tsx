@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import loginModalIcon from '../assets/loginModalIcon.png';
 import { setCookie } from '../utils/cookies';
 import { useUser } from '../contexts/UserContext';
+import { toast } from 'react-toastify';
 
 interface LoginProps {
     onLogin: (username: string, password: string) => Promise<string>;
@@ -19,8 +20,9 @@ const LoginPage: React.FC<LoginProps> = ({ onLogin, onToggle }) => {
             const token = await onLogin(username, password);
             setCookie('authToken', token, 7);
             login();
+            toast.success('Login successful!');
         } catch (error) {
-            console.log('LoginPage failed. Please check your credentials.');
+            toast.error('Login failed. Please check your credentials.');
             logout();
         }
     };

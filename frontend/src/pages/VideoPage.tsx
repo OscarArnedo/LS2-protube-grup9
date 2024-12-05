@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
-import {VideoMetaDataDTO, Like} from '../types/videoInterfaces';
+import {VideoMetaDataDTO} from '../types/videoInterfaces';
 import {fetchVideoById, fetchVideoMedia, updateComment, deleteComment, createComment} from '../services/videoService';
-import like from '../assets/like.png';
-import dislike from '../assets/dislike.png';
 import {useUser} from '../contexts/UserContext';
 
 const VideoPage: React.FC = () => {
@@ -11,8 +9,6 @@ const VideoPage: React.FC = () => {
     const [video, setVideo] = useState<VideoMetaDataDTO | null>(null);
     const [videoUrl, setVideoUrl] = useState<string | null>(null);
     const navigate = useNavigate();
-    const [likes, setLikes] = useState<Like[]>([]);
-    const [dislikes, setDislikes] = useState<Like[]>([]);
     const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
     const [editingCommentText, setEditingCommentText] = useState<string>('');
     const [showFullDescription, setShowFullDescription] = useState<boolean>(false);
@@ -31,12 +27,6 @@ const VideoPage: React.FC = () => {
 
                 const url = await fetchVideoMedia(videoData.videoPath);
                 setVideoUrl(url);
-
-                setLikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
-                setDislikes(videoData.comments.map(comment => ({id: comment.id, count: 0})));
-                console.log('Current user:', currentUser);
-                console.log('Video data:', videoData);
-                console.log('Authenticated:', isAuthenticated);
             } catch (error) {
                 console.error('Error fetching video data', error);
             }
@@ -44,18 +34,6 @@ const VideoPage: React.FC = () => {
 
         fetchVideoData();
     }, [id, navigate]);
-
-    const handleLike = (commentId: number) => {
-        setLikes(likes.map(like =>
-            like.id === commentId ? {...like, count: like.count + 1} : like
-        ));
-    };
-
-    const handleDislike = (commentId: number) => {
-        setDislikes(dislikes.map(dislike =>
-            dislike.id === commentId ? {...dislike, count: dislike.count + 1} : dislike
-        ));
-    };
 
     const handleEdit = (commentId: number, commentText: string) => {
         setEditingCommentId(commentId);
@@ -212,20 +190,6 @@ const VideoPage: React.FC = () => {
                                     <p className="text-sm text-gray-600 text-left max-w-full">{comment.comment_text}</p>
                                 )}
                                 <div className="flex items-center mt-2">
-                                    <button
-                                        className="text-blue-500 text-sm mr-4 flex items-center"
-                                        onClick={() => handleLike(comment.id)}
-                                    >
-                                        <img src={like} alt="Like" className="w-5 h-5 inline-block mr-1" />
-                                        <span>{likes.find(like => like.id === comment.id)?.count || 0}</span>
-                                    </button>
-                                    <button
-                                        className="text-blue-500 text-sm mr-4 flex items-center"
-                                        onClick={() => handleDislike(comment.id)}
-                                    >
-                                        <img src={dislike} alt="Dislike" className="w-5 h-5 inline-block mr-1" />
-                                        <span>{dislikes.find(dislike => dislike.id === comment.id)?.count || 0}</span>
-                                    </button>
                                     <div className="flex-grow"></div>
                                     {isAuthenticated && currentUser?.name === comment.author.name && (
                                         <>

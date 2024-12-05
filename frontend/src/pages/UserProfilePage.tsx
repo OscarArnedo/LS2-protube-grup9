@@ -2,169 +2,558 @@ import React, {useEffect, useState} from "react";
 import VideoCard from "../components/VideoCard";
 import Modal from '../components/Modal';
 import {CommentDTO, VideosDTO} from "../types/videoInterfaces.tsx";
-import {getVideosByAuthor, getCommentsByAuthor} from "../services/videoService.ts";
+import {getVideosByAuthor, getCommentsByAuthor, fetchVideoById, updateVideo, deleteVideo, uploadVideo} from "../services/videoService.ts";
+import {deleteUser, login, updateUser} from "../services/userService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
+import {toast} from "react-toastify";
+import {setCookie} from "../utils/cookies.ts";
 
 const UserProfilePage: React.FC = () => {
-  const [isUploadModalOpen, setUploadModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isUploadPopupOpen, setUploadPopupOpen] = useState(false);
   const [videoTitle, setVideoTitle] = useState('');
+  const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
+  const [isDeleteUserModalOpen, setDeleteUserModalOpen] = useState(false);
+  const [videoDescription, setVideoDescription] = useState('');
+  const [videoCategory, setVideoCategory] = useState('');
+  const [videoTags, setVideoTags] = useState<string[]>([]);
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [newTag, setNewTag] = useState('');
   const [comments, setComments] = useState<CommentDTO[]>([]);
   const [videos, setVideos] = useState<VideosDTO[]>([]);
-  const {currentUser} = useUser();
+  // @ts-ignore
+  const {currentUser, fetchCurrentUser} = useUser();
   const [imageUrls, setImageUrls] = useState<{ [key: number]: string }>({});
+  const [currentVideoId, setCurrentVideoId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editName, setEditName] = useState(currentUser?.name || '');
+  const [editEmail, setEditEmail] = useState(currentUser?.email || '');
+  const [editPassword, setEditPassword] = useState(currentUser?.password || '');
+
+  const fetchData = async () => {
+    try {
+      await fetchCurrentUser();
+      const commentsData = await getCommentsByAuthor();
+      const enrichComments = await enrichCommentsWithVideoData(commentsData);
+      setComments(enrichComments);
+
+      const videosData = await getVideosByAuthor();
+      setVideos(videosData);
+
+      const imagesUrlsMap = await getImagesForVideos(videosData);
+      setImageUrls(imagesUrlsMap);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const commentsData = await getCommentsByAuthor();
-        setComments(commentsData);
-
-        const videosData = await getVideosByAuthor();
-        setVideos(videosData);
-
-        const imagesUrlsMap = await getImagesForVideos(videosData);
-        setImageUrls(imagesUrlsMap);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData().then(r => console.log('Data fetched:', r));
-
+    fetchData();
+    console.log('Current user:', currentUser);
   }, []);
 
+  /*const fetchedCategory = async () => {
+    const fetchedCategory = 'Category 1';
+    setCategory(fetchedCategory); 
+  };*/
+
   const handleUploadVideo = () => {
-    setUploadModalOpen(true);
+    setUploadPopupOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setUploadModalOpen(false);
+  const handleClosePopup = () => {
+    setUploadPopupOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    // Lógica para manejar la subida de videos
-    if (videoFile) {
-      console.log('Video uploaded:', videoTitle, videoFile);
-      // Aquí puedes añadir la lógica para subir el video al servidor
+  const handleAddTag = () => {
+    if (newTag && !videoTags.includes(newTag)) {
+      setVideoTags([...videoTags, newTag]);
+      setNewTag('');
     }
-    setUploadModalOpen(false);
   };
 
-  // Ejemplo de datos de videos del usuario
-  /*const userVideos = [
-    { id: 1, title: 'Mi primer video', owner: 'Jane Doe', imagePath: '/assets/video1-thumbnail.png' },
-    { id: 2, title: 'Tutorial de React', owner: 'Jane Doe', imagePath: '/assets/video2-thumbnail.png' },
-    // Añade más videos según sea necesario
-  ];*/
+  const handleRemoveTag = (tag: string) => {
+    setVideoTags(videoTags.filter(t => t !== tag));
+  };
 
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (videoFile && thumbnailFile) {
+      const newVideoDTO = {
+        title: videoTitle,
+        description: videoDescription,
+        categories: videoCategory,
+        tags: videoTags,
+      };
+      try {
+        await uploadVideo(videoFile, thumbnailFile, newVideoDTO);
+
+        const updatedVideos = await getVideosByAuthor();
+        setVideos(updatedVideos);
+
+        const updatedImageUrls = await getImagesForVideos(updatedVideos);
+        setImageUrls(updatedImageUrls);
+
+        toast.success('Video uploaded successfully');
+      } catch (error) {
+        console.error('Error uploading video:', error);
+        toast.error('Error uploading video');
+      }
+      setUploadPopupOpen(false);
+
+      setVideoTitle('');
+      setVideoDescription('');
+      setVideoCategory('');
+      setVideoTags([]);
+      setVideoFile(null);
+      setThumbnailFile(null);
+    } else {
+      toast.error('Please fill all the fields and select the files');
+    }
+
+  };
+  const handleDelete = (id: number) => {
+    setCurrentVideoId(id);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (currentVideoId !== null) {
+      try {
+        await deleteVideo(currentVideoId);
+        setVideos(videos.filter((video) => video.id !== currentVideoId));
+        console.log("Deleted video with id:", currentVideoId);
+        toast.success("Video deleted successfully");
+      } catch (error) {
+        console.error("Error deleting video:", error);
+        toast.error("Error deleting video");
+      }
+    }
+    setDeleteModalOpen(false);
+    setCurrentVideoId(null);
+  };
+
+  const handleEdit = async (video: VideosDTO) => {
+    setCurrentVideoId(video.id);
+    setEditTitle(video.title);
+    try {
+      const videoData = await fetchVideoById(video.id);
+      setEditDescription(videoData.description || '');
+      setEditModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching video data:', error);
+    }
+  };
+
+  const saveEdit = async () => {
+    if (currentVideoId !== null) {
+      try {
+        await updateVideo(currentVideoId, editTitle, editDescription);
+        setVideos((prevVideos) =>
+            prevVideos.map((video) =>
+                video.id === currentVideoId
+                    ? {...video, title: editTitle}
+                    : video
+            )
+        );
+        console.log("Edited video:", currentVideoId, editTitle, editDescription);
+        toast.success("Video updated successfully");
+      } catch (error) {
+        console.error("Error updating video:", error);
+        toast.error("Error updating video");
+      }
+    }
+    setEditModalOpen(false);
+    setCurrentVideoId(null);
+  };
+
+  const enrichCommentsWithVideoData = async (comments: CommentDTO[]) => {
+    const enrichedComments = await Promise.all(
+        comments.map(async (comment) => {
+          try {
+            const videoData = await fetchVideoById(comment.videoId);
+            return {
+              ...comment,
+              video: {
+                title: videoData.title,
+                owner: videoData.owner.name,
+              },
+            };
+          } catch (error) {
+            console.error(`Error fetching video data for videoId ${comment.videoId}:`, error);
+            return comment;
+          }
+        })
+    );
+    return enrichedComments;
+  };
+  const handleEditUser = () => {
+    setEditUserModalOpen(true);
+  };
+
+  const handleDeleteUser = () => {
+    setDeleteUserModalOpen(true);
+  };
+
+  const saveEditUser = async () => {
+    try {
+      await updateUser(editName, editEmail, editPassword);
+      toast.success("User updated successfully");
+      const response = await login(editName, editPassword);
+      localStorage.setItem('userName', editName);
+      setCookie('authToken', response.access_token, 7);
+      await fetchData();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toast.error("Error updating user");
+    }
+    setEditUserModalOpen(false);
+  };
+
+  const confirmDeleteUser = async () => {
+    try {
+      await deleteUser();
+      toast.success("User deleted successfully");
+      // Add logic to log out the user or redirect to another page
+
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Error deleting user");
+    }
+    setDeleteUserModalOpen(false);
+  };
   return (
-    <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10">
-      {/* Información del usuario */}
-      <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
-        <div className="flex items-center">
-          <div className="w-24 h-24 rounded-full flex items-center justify-center bg-orange-500 text-gray-700 text-3xl font-bold">
-            {currentUser?.name.charAt(0).toUpperCase()}
+      <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10 relative">
+        {/* User Information */}
+        <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
+          <div className="flex items-center">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center bg-orange-500 text-gray-700 text-3xl font-bold">
+              {currentUser?.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="ml-6 flex flex-col text-left">
+              <h1 className="text-2xl font-bold text-gray-800">{currentUser?.name}</h1>
+              <p className="text-gray-600">{currentUser?.email}</p>
+            </div>
           </div>
-          <div className="ml-6 flex flex-col text-left">
-            <h1 className="text-2xl font-bold text-gray-800">{currentUser?.name}</h1>
-            <p className="text-gray-600">{currentUser?.email}</p>
+          <div className="flex mt-4">
+            <button
+                className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 mr-2"
+                onClick={handleEditUser}
+            >
+              Edit User
+            </button>
+            <button
+                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+                onClick={handleDeleteUser}
+            >
+              Delete User
+            </button>
           </div>
         </div>
-      </div>
 
-      {/* Botón para subir videos */}
-      <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
-        <button
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300"
-          onClick={handleUploadVideo}
-        >
-          Upload Video
-        </button>
-      </div>
+        {/* Button to open the video upload popup */}
+        <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
+          <button
+              className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300"
+              onClick={handleUploadVideo}
+          >
+            Upload Video
+          </button>
+        </div>
 
-      {/* Sección de videos */}
-      <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">My Videos</h2>
+        {/* Video upload popup */}
+        {isUploadPopupOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+              <div className="bg-white w-full sm:w-3/4 md:w-1/2 max-w-lg p-8 rounded-lg shadow-lg relative z-50 mx-4 mt-32 max-h-[80vh] overflow-y-auto">
+                <button
+                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-3xl font-bold"
+                    onClick={handleClosePopup}
+                >
+                  &times;
+                </button>
+                <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Upload Video</h2>
+                <form onSubmit={handleSubmit} className="text-left">
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTitle">
+                      Video Title
+                    </label>
+                    <input
+                        type="text"
+                        id="videoTitle"
+                        name="videoTitle"
+                        value={videoTitle}
+                        onChange={(e) => setVideoTitle(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoDescription">
+                      Video Description
+                    </label>
+                    <textarea
+                        id="videoDescription"
+                        name="videoDescription"
+                        value={videoDescription}
+                        onChange={(e) => setVideoDescription(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categories">
+                      Video Category
+                    </label>
+                    <input
+                        type="text"
+                        id="categories"
+                        name="categories"
+                        value={videoCategory}
+                        onChange={(e) => setVideoCategory(e.target.value)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTags">
+                      Video Tags
+                    </label>
+                    <div className="flex items-center">
+                      <input
+                          type="text"
+                          id="videoTags"
+                          name="videoTags"
+                          value={newTag}
+                          onChange={(e) => setNewTag(e.target.value)}
+                          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      />
+                      <button
+                          type="button"
+                          className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm focus:outline-none focus:shadow-outline"
+                          onClick={handleAddTag}
+                      >
+                        Add Tag
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap mt-2">
+                      {videoTags.map((tag) => (
+                          <div key={tag} className="bg-gray-200 text-gray-700 px-2 py-1 rounded-full mr-2 mb-2 flex items-center">
+                            <span>{tag}</span>
+                            <button
+                                type="button"
+                                className="ml-2 text-red-500"
+                                onClick={() => handleRemoveTag(tag)}
+                            >
+                              &times;
+                            </button>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="thumbnailFile">
+                      Thumbnail Image
+                    </label>
+                    <input
+                        type="file"
+                        id="thumbnailFile"
+                        name="thumbnailFile"
+                        onChange={(e) => setThumbnailFile(e.target.files ? e.target.files[0] : null)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoFile">
+                      Video File
+                    </label>
+                    <input
+                        type="file"
+                        id="videoFile"
+                        name="videoFile"
+                        onChange={(e) => setVideoFile(e.target.files ? e.target.files[0] : null)}
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        required
+                    />
+                  </div>
+                  <div className="flex justify-center mt-6">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+        )}
+
+        {/* Videos Section */}
+        <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg mb-6">
+          <h2 className="text-xl font-bold mb-4 text-gray-800">My Videos</h2>
           {videos.length === 0 ? (
-            <div className="flex justify-center items-center h-32">
-              <p className="text-gray-600 text-sm text-center">No videos yet</p>
-            </div>
+              <div className="flex justify-center items-center h-32">
+                <p className="text-gray-600 text-sm text-center">No videos yet</p>
+              </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-1 justify-items-center">
-              {videos.map(video => (
-                <VideoCard key={video.id} {...video} imagePath={imageUrls[video.id]}/>
-              ))}
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-1 justify-items-center">
+                {videos.map((video) => (
+                    <div key={video.id}>
+                      <VideoCard {...video} imagePath={imageUrls[video.id]} />
+                      <div className="flex justify-start mt-2 space-x-2 ml-4">
+                        <button
+                            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-700 transition duration-300"
+                            onClick={() => handleEdit(video)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                            className="bg-black text-white px-4 py-2 rounded hover:bg-red-500 transition duration-300"
+                            onClick={() => handleDelete(video.id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                ))}
+              </div>
           )}
-      </div>
+        </div>
 
-      {/* Sección de comentarios */}
-      <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">My Comments</h2>
-        {/* Tarjeta de comentario */}
-        {comments.length === 0 && <p className="text-gray-600 text-sm text-center">No comments yet</p>}
-          {comments.map((comment, index) => (
-            <div key={index} className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
-              <p className="text-gray-600 text-sm text-left">{comment.comment_text}</p>
-            </div>
-        ))}
-      </div>
+        {/* Delete Modal */}
+        <Modal isOpen={isDeleteModalOpen} onClose={() => setDeleteModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-4">Are you sure you want to delete this video?</h3>
+          <div className="flex justify-between">
+            <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setDeleteModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={confirmDelete}
+            >
+              Delete
+            </button>
+          </div>
+        </Modal>
 
-      {/* Modal para subir videos */}
-      <Modal isOpen={isUploadModalOpen} onClose={handleCloseModal}>
-        <div className="p-4">
-          <h2 className="text-xl font-bold mb-4">Upload Video</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoTitle">
-                Video Title
-              </label>
-              <input
+        {/* Edit Modal */}
+        <Modal isOpen={isEditModalOpen} onClose={() => setEditModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-4">Edit video</h3>
+          <div>
+            <label className="block text-gray-700">Title</label>
+            <input
                 type="text"
-                id="videoTitle"
-                name="videoTitle"
-                value={videoTitle}
-                onChange={(e) => setVideoTitle(e.target.value)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="videoFile">
-                Video File
-              </label>
-              <input
-                type="file"
-                id="videoFile"
-                name="videoFile"
-                onChange={(e) => setVideoFile(e.target.files ? e.target.files[0] : null)}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                required
-              />
-            </div>
-            <div className="flex items-center justify-between">
+                className="w-full border rounded px-3 py-2 mb-4"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+            />
+            <label className="block text-gray-700">Description</label>
+            <textarea
+                className="w-full border rounded px-3 py-2 mb-4"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+            />
+            <div className="flex justify-between">
               <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Upload
-              </button>
-              <button
-                type="button"
-                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={handleCloseModal}
+                  className="bg-gray-300 px-4 py-2 rounded"
+                  onClick={() => setEditModalOpen(false)}
               >
                 Cancel
               </button>
+              <button className="bg-blue-500 px-4 py-2 rounded text-white" onClick={saveEdit}>
+                Save
+              </button>
+            </div>
+          </div>
+        </Modal>
+
+        {/* Edit User Modal */}
+        <Modal isOpen={isEditUserModalOpen} onClose={() => setEditUserModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-4">Edit User</h3>
+          <form onSubmit={(e) => { e.preventDefault(); saveEditUser(); }}>
+            <div>
+              <label className="block text-gray-700">Name</label>
+              <input
+                  type="text"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+              />
+              <label className="block text-gray-700">Email</label>
+              <input
+                  type="email"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+              />
+              <label className="block text-gray-700">Password</label>
+              <input
+                  type="password"
+                  className="w-full border rounded px-3 py-2 mb-4"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  required
+              />
+              <div className="flex justify-between">
+                <button
+                    type="button"
+                    className="bg-gray-300 px-4 py-2 rounded"
+                    onClick={() => setEditUserModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="bg-blue-500 px-4 py-2 rounded text-white">
+                  Save
+                </button>
+              </div>
             </div>
           </form>
+        </Modal>
+
+        {/* Delete User Modal */}
+        <Modal isOpen={isDeleteUserModalOpen} onClose={() => setDeleteUserModalOpen(false)}>
+          <h3 className="text-lg font-bold mb-4">Are you sure you want to delete your account?</h3>
+          <div className="flex justify-between">
+            <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={() => setDeleteUserModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={confirmDeleteUser}
+            >
+              Delete
+            </button>
+          </div>
+        </Modal>
+
+        {/* Comments Section */}
+        <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl font-bold mb-4 text-gray-800">My Comments</h2>
+          {comments.length === 0 && <p className="text-gray-600 text-sm text-center">No comments yet</p>}
+          {comments.map((comment) => (
+              <div key={comment.id} className="bg-gray-100 rounded-lg p-4 mb-4 shadow">
+                <p className="text-gray-800 font-bold text-sm text-left">
+                  {comment.video?.title || 'Unknown Title'} by {comment.video?.owner || 'Unknown Owner'}
+                </p>
+                <p className="text-gray-600 text-sm text-left">{comment.comment_text}</p>
+              </div>
+          ))}
         </div>
-      </Modal>
-    </div>
+      </div>
   );
-};
+}
 
 export default UserProfilePage;

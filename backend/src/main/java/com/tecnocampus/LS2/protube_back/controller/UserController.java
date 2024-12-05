@@ -43,15 +43,15 @@ public class UserController {
         return userService.getUserDetails(principal.getName());
     }
 
-    @Operation(summary = "Update a user given an id and a userDTO")
-    @PutMapping("/{id}")
-    public UserDTO updateUser(@PathVariable String id, @RequestBody UserDTO userDTO) {
-        return userService.updateUser(id, userDTO);
+    @Operation(summary = "Update logged user given a userDTO")
+    @PutMapping()
+    public UserDTO updateUser(Principal principal,@RequestBody UserDTO userDTO) {
+        return userService.updateUser(principal.getName(), userDTO);
     }
 
-    @Operation(summary = "Delete a user given an id")
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable String id) {
-        userService.deleteUser(id);
+    @Operation(summary = "Delete logged user")
+    @DeleteMapping()
+    public void deleteUser(Principal principal) {
+        userService.deleteUser(principal.getName());
     }
 }

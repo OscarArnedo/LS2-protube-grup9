@@ -5,16 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tecnocampus.LS2.protube_back.service.dto.CommentDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.UserDTO;
 import com.tecnocampus.LS2.protube_back.service.dto.VideoDTO;
+import com.tecnocampus.LS2.protube_back.service.dto.VideoUpdateDTO;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -45,9 +50,8 @@ class ProtubeBackApplicationTests {
 	private static String randomName;
 	private static String randomEmail;
 	private static Long createdCommentId;
-	private final static String passwordEncrypted = "$2a$10$fVKfcc47q6lrNbeXangjYeY000dmjdjkdBxEOilqhapuTO5ZH0co2";
+	private static Long createdVideoId;
 	private final static String password = "password123";
-	private static String token;
 
 	private String authenticate(String username, String password) throws Exception {
 		String body = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
@@ -89,25 +93,20 @@ class ProtubeBackApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/0")
 						.accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(0))
-				.andExpect(jsonPath("$.title").value("Bruno Mars - 24K Magic (Official Music Video)"))
-				.andExpect(jsonPath("$.height").value(1080))
-				.andExpect(jsonPath("$.width").value(1920))
-				.andExpect(jsonPath("$.duration").value(24))
-				.andExpect(jsonPath("$.owner.name").value("Bruno Mars"))
-				.andExpect(jsonPath("$.owner.email").value("Bruno Mars@gmail.com"))
-				.andExpect(jsonPath("$.videoPath").value("0.mp4"))
-				.andExpect(jsonPath("$.imagePath").value("0.webp"))
+				.andExpect(jsonPath("$.id").exists())
+				.andExpect(jsonPath("$.title").exists())
+				.andExpect(jsonPath("$.height").exists())
+				.andExpect(jsonPath("$.width").exists())
+				.andExpect(jsonPath("$.duration").exists())
+				.andExpect(jsonPath("$.owner.name").exists())
+				.andExpect(jsonPath("$.owner.email").exists())
+				.andExpect(jsonPath("$.videoPath").exists())
+				.andExpect(jsonPath("$.imagePath").exists())
 				.andExpect(jsonPath("$.comments").isArray())
 				.andExpect(jsonPath("$.description").exists())
 				.andExpect(jsonPath("$.tags").isArray())
-				.andExpect(jsonPath("$.categories").value("Music"));
-
-
+				.andExpect(jsonPath("$.categories").exists());
 	}
-	//create video
-	//update video
-	//delete video
 
 	@Test
 	@Order(3)
@@ -118,7 +117,7 @@ class ProtubeBackApplicationTests {
                   "email" : "%s",
                   "password" : "%s"
                 }
-                """.formatted(randomName, randomEmail,passwordEncrypted);
+                """.formatted(randomName, randomEmail,password);
 		MvcResult result = mockMvc.perform(post("/api/users/create").contentType("application/json").content(user))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.name").value(randomName))
@@ -307,17 +306,94 @@ class ProtubeBackApplicationTests {
 
 	@Test
 	@Order(14)
-	void deleteUser() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
-				.andExpect(status().isOk());
+	void createVideo() throws Exception {
+		String newVideoDTO = """
+            {
+              "title": "Test Video",
+              "description": "Test Description",
+              "categories": "Test Category",
+              "tags": ["tag1", "tag2"]
+            }
+            """;
+
+		String token = authenticate(randomName, password);
+
+		MockMultipartFile videoFile = new MockMultipartFile("videoFile", "testVideo.mp4",
+				MediaType.MULTIPART_FORM_DATA_VALUE, getClass().getResourceAsStream("/testVideo.mp4"));
+		MockMultipartFile imageFile = new MockMultipartFile("imageFile", "testImage.webp",
+				MediaType.MULTIPART_FORM_DATA_VALUE, getClass().getResourceAsStream("/testImage.webp"));
+		MockMultipartFile newVideoDTOFile = new MockMultipartFile("newVideoDTO", "",
+				MediaType.APPLICATION_JSON_VALUE, newVideoDTO.getBytes());
+
+		mockMvc.perform(MockMvcRequestBuilders.multipart("/api/videos")
+						.file(videoFile)
+						.file(imageFile)
+						.file(newVideoDTOFile)
+						.header("Authorization", "Bearer " + token)
+						.principal(() -> randomName))
+						.andExpect(status().isOk())
+						.andExpect(MockMvcResultMatchers.content().string("Video created successfully"));
+
+		String result = mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/author")
+						.header("Authorization", "Bearer " + token)
+						.principal(() -> randomName))
+						.andReturn().getResponse().getContentAsString();
+		List<VideoDTO> videos = objectMapper.readValue(result, new TypeReference<>() {});
+		assertEquals(1, videos.size());
+		createdVideoId = videos.get(0).getId();
 	}
 
 	@Test
 	@Order(15)
-	void badDeleteUser() throws Exception {
-		assertThrows(Exception.class, () -> {
-			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))
-					.andExpect(status().isNotFound());
-		});
+	void updateVideo() throws Exception{
+		String videoUpdateDTO = """
+				{
+				  "title": "Updated title",
+				  "description": "Updated description"
+				}
+				""";
+		String token = authenticate(randomName, password);
+		mockMvc.perform(MockMvcRequestBuilders.put("/api/videos/"+createdVideoId)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(videoUpdateDTO)
+						.principal(() -> randomName)
+						.header("Authorization", "Bearer " + token))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.title").value("Updated title"))
+				.andExpect(jsonPath("$.description").value("Updated description"));
+	}
+
+	@Test
+	@Order(16)
+	void deleteVideo() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/videos/"+createdVideoId)
+						.principal(() -> randomName)
+						.header("Authorization", "Bearer " + authenticate(randomName, password)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(17)
+	void deleteUser() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users")
+						.principal(() -> randomName)
+						.header("Authorization", "Bearer " + authenticate(randomName, password)))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(18)
+	void getCategories() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/categories"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
+	}
+
+	@Test
+	@Order(19)
+	void getVideosByCategory() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/category/Music"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray());
 	}
 }

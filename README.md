@@ -1,8 +1,114 @@
-# Pro tube project
+#  <img src="https://github.com/user-attachments/assets/5211042b-5c67-4355-8f5d-932bd912afc5" alt="logoProtube" width="40" height="40"> PROTUBE
 
 ## Project
 The project consists of building a web application where the user can watch and comment videos uploaded by other registered users.
 
+## Backend
+
+It is a REST API that provides the data for the frontend. It is built with SpringBoot in Java21 and PostgreSQL.
+
+### How to run on DEV environment
+
+1. Clone the repository
+2. Open the project in your favorite IDE
+3. Create a PostgreSQL database
+4. Configure the IDE:
+   1. Create a new **Java Application** Run Configuration
+   2. Configure the following environment variables:
+       - `ENV_PROTUBE_DB`: The name of the database. For example: *protube*
+       - `ENV_PROTUBE_DB_USER`: The username of the database. For example: *admin*
+       - `ENV_PROTUBE_DB_PWD`: The password of the database. For example: *admin1234*
+       - `ENV_PROTUBE_STORE_DIR`: The directory where the files are stored. For example: *C:/protube/store/*
+       - `ENV_PROTUBE_PROFILE`: **dev**
+5. Run the application
+
+> [!IMPORTANT] 
+> The `ENV_PROTUBE_STORE_DIR` must end with a slash `/`
+
+> [!NOTE]
+> Database must be active before running backend.
+
+> [!NOTE]
+> If you want to see some video examples run the tooling/videoGrabber script and set the path of the videos to the ENV variable `ENV_PROTUBE_STORE_DIR`.
+> Be aware that the all the users created in the database will have by default the same password `password123`. 
+ 
+### How to run on PROD environment
+
+1. Start at last once the application in DEV environment
+2. Configure the IDE:
+   1. Create a new **Maven** Run Configuration
+   2. On the **run configuration**, add the following command line: `spring-boot:run`
+   3. Configure Java JRE: **Java 21**
+   4. Configure the following environment variables:
+      - `ENV_PROTUBE_DB`: The name of the database. For example: *protube*
+      - `ENV_PROTUBE_DB_USER`: The username of the database. For example: *admin*
+      - `ENV_PROTUBE_DB_PWD`: The password of the database. For example: *admin1234*
+      - `ENV_PROTUBE_STORE_DIR`: The directory where the files are stored. For example: *C:/protube/store/*
+      - `ENV_PROTUBE_PROFILE`: **prod**
+
+> [!NOTE]
+> Be aware that PROD environment also runs the frontend on port 8080. You must have the frontend dependencies installed to run the application.
+
+## Frontend
+It is a React project made with Node 20.
+
+### How to run on DEV environment
+
+Navigate in a terminal to `frontend` folder and run the following command to install dependencies
+
+```commandline
+npm install
+```
+Once dependencies are installed properly run the following code to execute the application in `dev` mode
+
+```commandline
+npm run dev
+```
+
+This command above will open a port 5173 where you can access from the browser.
+
+## How to run the Tests
+
+To run the backend test you must configure the Environment Variables like you do to run int in PROD.
+
+## Extra functionalities
+### Video searcher
+On the home page there's a Searching Bar were you can search your videos using their title or the name of the user that uploded this video.  
+
+<img src="https://github.com/user-attachments/assets/c923692a-7f19-4fe2-8970-d7953aac3dac" alt="videoSearcher" widtth="800">  
+
+### Documentation using Swagger
+We developed a backend documentation using Swagger to specify the endpoints of the api. You can access to this documentation accessing this address:  
+http://localhost:8080/swagger-ui/index.html  
+
+<img src="https://github.com/user-attachments/assets/2149ec0c-5dde-4bca-a322-0bb19fcfc3e0" alt="swaggerImage" width="650">  
+
+### Groupe videos by Category
+You can filter the videos by their categories:  
+
+<img src="https://github.com/user-attachments/assets/48f35210-dcfa-4c44-9a92-6597239fb618" alt="categoriesImage" width="650">  
+  
+### Responsiveness
+This app adjusts to all types of devices thanks to the library Tailwind CSS.  
+
+View using an Ipad Mini:  
+<br/>
+<img src="https://github.com/user-attachments/assets/758cf9cc-4f08-4dec-9f16-81839ce7c030" alt="ipadHome" width="400">    
+  
+View using an Iphone 14:  
+<br/>
+<img src="https://github.com/user-attachments/assets/0dc98452-0e12-4225-b1b9-5286b744e94e" alt="iphoneHome" width="250">  
+
+## Examples of the Agile Methodology
+
+### Exaple of a task
+[Backend] CRUD Comments. Link: <a href="https://github.com/users/OscarArnedo/projects/1/views/1?filterQuery=comme&pane=issue&itemId=83443652&issue=OscarArnedo%7CLS2-protube-grup9%7C15"> TASK </a>
+
+### Exaple of a Pull Request
+15 backend crud comments. Link: <a href="https://github.com/OscarArnedo/LS2-protube-grup9/pull/50"> Pull Request</a>
+
+<br/><br/><br/><br/>
+## General Readme made by the Teacher
 ### Goals
 
 The goal of this exercise is to reproduce as much as we can a REAL work environment.

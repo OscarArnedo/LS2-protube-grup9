@@ -48,4 +48,43 @@ export const getUserDetails = async () => {
         throw error;
     }
 };
-    
+
+export const updateUser = async (name: string, email: string, password: string): Promise<UserDTO> => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    try {
+        const response = await axios.put<UserDTO>(getEnv().API_BASE_URL + '/users', {
+            name,
+            email,
+            password,
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+    }
+};
+
+export const deleteUser = async (): Promise<void> => {
+    const token = getCookie('authToken');
+    if (!token) {
+        throw new Error('No auth token found');
+    }
+    try {
+        await axios.delete(getEnv().API_BASE_URL + '/users', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        throw error;
+    }
+
+};

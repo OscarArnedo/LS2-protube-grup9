@@ -5,6 +5,7 @@ export interface VideosDTO {
     title: string;
     owner: string;
     imagePath: string;
+    category?: string;
 }
 
 export interface HomeVideosDTO {
@@ -13,8 +14,13 @@ export interface HomeVideosDTO {
 
 export interface CommentDTO {
     id: number;
+    videoId: number;
     comment_text: string;
     author: UserDTO;
+    video?: {
+        title: string;
+        owner: string;
+    };
 }
 
 export interface VideoMetaDataDTO {
@@ -30,9 +36,4 @@ export interface VideoMetaDataDTO {
     description: string;
     tags: string[];
     categories: string[];
-}
-
-export interface Like{
-    id: number;
-    count: number;
 }
