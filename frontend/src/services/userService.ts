@@ -86,4 +86,5 @@ export const deleteUser = async (): Promise<void> => {
         console.error('Error deleting user:', error);
         throw error;
     }
+
 };
