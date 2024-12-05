@@ -375,21 +375,14 @@ class ProtubeBackApplicationTests {
 	@Test
 	@Order(17)
 	void deleteUser() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/"+createdUserId))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/users")
+						.principal(() -> randomName)
+						.header("Authorization", "Bearer " + authenticate(randomName, password)))
 				.andExpect(status().isOk());
 	}
 
 	@Test
 	@Order(18)
-	void badDeleteUser() throws Exception {
-		assertThrows(Exception.class, () -> {
-			mockMvc.perform(MockMvcRequestBuilders.delete("/api/users/123"))
-					.andExpect(status().isNotFound());
-		});
-	}
-
-	@Test
-	@Order(19)
 	void getCategories() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/categories"))
 				.andExpect(status().isOk())
@@ -397,7 +390,7 @@ class ProtubeBackApplicationTests {
 	}
 
 	@Test
-	@Order(20)
+	@Order(19)
 	void getVideosByCategory() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/videos/category/Music"))
 				.andExpect(status().isOk())
