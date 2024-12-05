@@ -36,4 +36,11 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 .allowedOriginPatterns("*");
     }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/video/**").setViewName("forward:/index.html");
+        registry.addViewController("/profile").setViewName("forward:/index.html");
+        registry.addViewController("/login").setViewName("forward:/index.html");
+    }
 }

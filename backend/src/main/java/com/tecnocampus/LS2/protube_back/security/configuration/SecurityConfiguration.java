@@ -35,7 +35,10 @@ public class SecurityConfiguration implements WebMvcConfigurer {
             "/v3/api-docs/**",
             "/assets/**",
             "/api/users/create",
-            "/media/**"
+            "/media/**",
+            "/video/**",
+            "/profile",
+            "/index.html"
         };
 
     @Override
