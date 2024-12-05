@@ -37,8 +37,3 @@ export interface VideoMetaDataDTO {
     tags: string[];
     categories: string[];
 }
-
-export interface Like{
-    id: number;
-    count: number;
-}
