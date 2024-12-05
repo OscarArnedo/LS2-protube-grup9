@@ -19,7 +19,6 @@ public class User {
 
     @Email
     private String email;
-    private String password;
 
     public User() {
     }
@@ -27,7 +26,6 @@ public class User {
     public User(UserDTO userDTO) {
         this.name = userDTO.getName();
         this.email = userDTO.getEmail();
-        this.password = userDTO.getPassword();
     }
 
 }

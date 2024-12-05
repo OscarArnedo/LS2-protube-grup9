@@ -18,7 +18,6 @@ public class UserDTO {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
-        this.password = user.getPassword();
     }
 
 
