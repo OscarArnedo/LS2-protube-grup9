@@ -9,5 +9,5 @@ public interface UserSecurityRepository extends JpaRepository<UserSecurity, Long
 
     Optional<UserSecurity> findByUsername(String username);
 
-    Optional<UserSecurity> findByEmail(@Email String email);
+    Optional<UserSecurity> findByEmail(String email);
 }
