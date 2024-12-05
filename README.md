@@ -94,7 +94,15 @@ View using an Iphone 14:
 <br/>
 <img src="https://github.com/user-attachments/assets/0dc98452-0e12-4225-b1b9-5286b744e94e" alt="iphoneHome" width="250">  
 
-<br/><br/><br/><br/><br/>
+## Examples of the Agile Methodology
+
+### Exaple of a task
+[Backend] CRUD Comments. Link: <a href="https://github.com/users/OscarArnedo/projects/1/views/1?filterQuery=comme&pane=issue&itemId=83443652&issue=OscarArnedo%7CLS2-protube-grup9%7C15"> TASK </a>
+
+### Exaple of a Pull Request
+15 backend crud comments. Link: <a href="https://github.com/OscarArnedo/LS2-protube-grup9/pull/50"> Pull Request</a>
+
+<br/><br/><br/><br/>
 ## General Readme made by the Teacher
 ### Goals
 
