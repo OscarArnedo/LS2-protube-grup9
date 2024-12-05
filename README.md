@@ -67,6 +67,10 @@ npm run dev
 
 This command above will open a port 5173 where you can access from the browser.
 
+## How to run the Tests
+
+To run the backend test you must configure the Environment Variables like you do to run int in PROD.
+
 ## Extra functionalities
 ### Video searcher
 On the home page there's a Searching Bar were you can search your videos using their title or the name of the user that uploded this video.  
