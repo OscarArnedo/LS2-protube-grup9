@@ -7,7 +7,8 @@ import {deleteUser, login, updateUser} from "../services/userService.ts";
 import {useUser} from "../contexts/UserContext.tsx";
 import { getImagesForVideos } from "../utils/functions.ts";
 import {toast} from "react-toastify";
-import {setCookie} from "../utils/cookies.ts";
+import {setCookie, deleteCookie} from "../utils/cookies.ts";
+import {useNavigate} from "react-router-dom";
 
 const UserProfilePage: React.FC = () => {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -33,6 +34,7 @@ const UserProfilePage: React.FC = () => {
   const [editName, setEditName] = useState(currentUser?.name || '');
   const [editEmail, setEditEmail] = useState(currentUser?.email || '');
   const [editPassword, setEditPassword] = useState(currentUser?.password || '');
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -219,14 +221,15 @@ const UserProfilePage: React.FC = () => {
   const confirmDeleteUser = async () => {
     try {
       await deleteUser();
-      toast.success("User deleted successfully");
-      // Add logic to log out the user or redirect to another page
-
+      deleteCookie('authToken');
     } catch (error) {
       console.error("Error deleting user:", error);
       toast.error("Error deleting user");
     }
     setDeleteUserModalOpen(false);
+    navigate('/');
+    window.location.reload();
+    toast.success("User deleted successfully");
   };
   return (
       <div className="flex flex-col items-center bg-gray-50 min-h-screen py-10 relative">

@@ -29,6 +29,8 @@ function App() {
         console.log('Token:', token);
         if (token) {
             setIsAuthenticated(true);
+        }else{
+            setIsAuthenticated(false);
         }
     }, []);
 
