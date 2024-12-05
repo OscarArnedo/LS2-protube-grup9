@@ -1,5 +1,6 @@
 package com.tecnocampus.LS2.protube_back.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tecnocampus.LS2.protube_back.domain.User;
 import lombok.Data;
 
